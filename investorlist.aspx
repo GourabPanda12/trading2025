@@ -9,9 +9,7 @@
     <title>Investor lists</title>
         <ucx:MyUserControl1 runat="server" />
 
-    <!-- DataTable CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" />
+  
 
     <style>
         body {
@@ -202,7 +200,12 @@
                         <td>${item.Place}</td>
                         <td>${item.ReferBy}</td>
                         <td>${item.ActiveDocuments ? "Yes" : "No"}</td>
-                        <td><button class="btn btn-primary btn-sm"><a href="profile.aspx"  style="color: #fff; text-decoration: none;">View</a></button></td>
+                     <td>
+                        <button class="btn btn-primary btn-sm">
+                            <a href="profile.aspx?ClientId=${item.ClientId}" style="color: #fff; text-decoration: none;">View</a>
+                        </button>
+                    </td>
+                    
                     </tr>
                 `);
                      });

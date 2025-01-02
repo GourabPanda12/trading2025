@@ -175,15 +175,17 @@ public partial class agreement : System.Web.UI.Page
 
 
 
-
     [WebMethod(EnableSession = true)]
     public static string abcd(IEnumerable<AgreementDetails> formData)
     {
         try
         {
+            // Convert the IEnumerable to a List for processing
+            List<AgreementDetails> formDataList = formData.ToList();
+
             string constr = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
 
-            foreach (var data in formData)
+            foreach (var data in formDataList)
             {
                 // Handle file uploads
                 var uploadedPaths = new Dictionary<string, string>();
@@ -196,16 +198,16 @@ public partial class agreement : System.Web.UI.Page
                 using (SqlConnection con = new SqlConnection(constr))
                 {
                     const string insertQuery = @"
-                    INSERT INTO [tradedata].[tradeadmin].[aggrement] 
-                    (clientName, ClientID, TransactionAmount, ClientReceipt, PaymentReceipt, 
-                     AgreementID, Agreementdocument, refer, percentage, 
-                     Priority, TotalFund, StartDate, Term, expireDate, 
-                     profitclient, Accountlink, CurrentTransaction, DaysInvestment, ClientReceiptpath,ifsc) 
-                    VALUES 
-                    (@clientName, @ClientID, @TransactionAmount, @ClientReceipt, @PaymentReceipt, 
-                     @AgreementID, @Agreementdocument, @refer, @percentage, 
-                     @Priority, @TotalFund, @StartDate, @Term, @expireDate, 
-                     @profitclient, @Accountlink, @CurrentTransaction, @DaysInvestment, @ClientReceiptpath,@ifsc)";
+                INSERT INTO [tradedata].[tradeadmin].[aggrement] 
+                (clientName, ClientID, TransactionAmount, ClientReceipt, PaymentReceipt, 
+                 AgreementID, Agreementdocument, refer, percentage, 
+                 Priority, TotalFund, StartDate, Term, expireDate, 
+                 profitclient, Accountlink, CurrentTransaction, DaysInvestment, ClientReceiptpath, ifsc) 
+                VALUES 
+                (@clientName, @ClientID, @TransactionAmount, @ClientReceipt, @PaymentReceipt, 
+                 @AgreementID, @Agreementdocument, @refer, @percentage, 
+                 @Priority, @TotalFund, @StartDate, @Term, @expireDate, 
+                 @profitclient, @Accountlink, @CurrentTransaction, @DaysInvestment, @ClientReceiptpath, @ifsc)";
 
                     using (SqlCommand cmd = new SqlCommand(insertQuery, con))
                     {
@@ -243,8 +245,8 @@ public partial class agreement : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine("Error in abcd method: {ex.Message}");
-            return "Error: {ex.Message}";
+            System.Diagnostics.Debug.WriteLine("ex.Message");
+            return "Error: ex.Message";
         }
     }
 
@@ -253,7 +255,7 @@ public partial class agreement : System.Web.UI.Page
 
 
 
-[WebMethod]
+    [WebMethod]
     public static string GenerateNewAgreementID(string clientID)
     {
         string constr = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;

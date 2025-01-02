@@ -1,5 +1,4 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="profile.aspx.cs" Inherits="profile" %>
-
 <%@ Register TagPrefix="ucx1" TagName="MyUserControl11" Src="~/sidenav2.ascx" %>
 <%@ Register TagPrefix="ucx" TagName="MyUserControl1" Src="~/header.ascx" %>
 
@@ -8,9 +7,75 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
+       <ucx:MyUserControl1 runat="server" />
     <title></title>
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
-       <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" />
+       
+
+
+      
+    <script>
+        $(document).ready(function () {
+            var table = $('#data-table').DataTable({
+                pageLength: 10, // Default page length
+                responsive: true,
+                dom: 'Bfrtip',
+                lengthMenu: [10, 25, 50, 100] // Page length options
+            });
+
+
+            $('#status-filter').on('change', function () {
+                const filterValue = $(this).val();
+                table.column(6).search(filterValue).draw();
+            });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const clientId = urlParams.get('ClientId');
+
+            if (clientId) {
+                // Fetch client data from the server
+                $.ajax({
+                    type: "POST",
+                    url: "profile.aspx/GetClientDetails",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ clientId: clientId }),
+                    dataType: "json",
+                    success: function (response) {
+                        const data = response.d;
+
+                        if (data && data.length > 0) {
+                            const client = data[0]; 
+
+                            // Populate the profile details
+                            $(".profile-details").html(`
+                    <h2>Client Details</h2>
+                    <p><strong>Client Name:</strong> ${client.ClientName}</p>
+                    <p><strong>Client ID:</strong> ${clientId}</p>
+                    <p><strong>Joining Date:</strong> ${client.JoiningDate}</p>
+                    <p><strong>Refer By:</strong> ${client.ReferBy}</p>
+                    <p><strong>Mobile:</strong> ${client.MobileNo}</p>
+                    <p><strong>Nominee:</strong> ${client.NomineeName}</p>
+                    <p><strong>District:</strong> ${client.District}</p>
+
+                    <button>Edit</button>
+                `);
+                        } else {
+                            alert("No data found for the provided Client ID.");
+                        }
+                    },
+                    error: function (err) {
+                        console.error("Error fetching client details:", err);
+                    }
+                });
+            } else {
+                alert("Client ID not provided in the URL.");
+            }
+
+
+
+        });
+    </script>
+
+
 
         <style>
         /* General Reset */
@@ -217,17 +282,17 @@ table a {
         <div class="content">
             <!-- Left Section: Profile Details -->
             <div class="profile-details">
-                <h2>Basic Details</h2>
-                <p><strong>Client Name:</strong> ABC RKJ</p>
-                <p><strong>Client ID:</strong> ABC7631</p>
-                <p><strong>Joining Date:</strong> 01-05-2024 (6 Months)</p>
-                <p><strong>Refer By:</strong> SK DANISH RAHIM</p>
-                <p><strong>Mobile:</strong> 8249756314</p>
-                <p><strong>Total Agreement:</strong> 08</p>
-                <p><strong>Current Capital:</strong> 500,000.00</p>
-                <p><strong>Total Profit:</strong> 76,000.00</p>
-                <p><strong>Nominee:</strong> MKJ RKJ</p>
-                <p><strong>District:</strong> Khordha</p>
+                <h2>Client Details</h2>
+                <p><strong>Client Name:</strong></p>
+                <p><strong>Client ID:</strong></p>
+                <p><strong>Joining Date:</strong></p>
+                <p><strong>Refer By:</strong></p>
+                <p><strong>Mobile:</strong> </p>
+                <p><strong>Total Agreement:</strong> </p>
+                <p><strong>Current Capital:</strong> </p>
+                <p><strong>Total Profit:</strong> </p>
+                <p><strong>Nominee:</strong> </p>
+                <p><strong>District:</strong></p>
                 <button>Edit</button>
             </div>
 
@@ -395,27 +460,7 @@ table a {
         </div>
     </form>
 
-        <!-- jQuery --> 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
-    <!-- DataTable JS -->
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-
-    <script>
-        $(document).ready(function () {
-            var table = $('#data-table').DataTable({
-                pageLength: 5,
-                responsive: true,
-                dom: 'Bfrtip'
-            });
-
-            $('#status-filter').on('change', function () {
-                const filterValue = $(this).val();
-                table.column(6).search(filterValue).draw();
-            });
-        });
-    </script>
+ 
 </body>
 </html>
 

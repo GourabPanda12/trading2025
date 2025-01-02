@@ -12,16 +12,9 @@
 
             <ucx:MyUserControl1 ID="MyUserControl1" runat="server" />
 
-   
-
-
 
     <title>Login</title>
-
-
-
-
-   
+ 
 <script>
 
     function getCookie(cookieName) {

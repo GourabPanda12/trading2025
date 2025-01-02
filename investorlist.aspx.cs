@@ -29,7 +29,7 @@ public partial class investorlist : System.Web.UI.Page
         // Return the data to the client-side
         return new { data = dataList };
     }
-
+   
     public class ClientDataService : IDisposable
     {
         private readonly SqlConnection _connection;
