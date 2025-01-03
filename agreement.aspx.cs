@@ -12,24 +12,18 @@ using System.Configuration;
 using System.Web.Services;
 using System.Net;
 using System.Text.RegularExpressions;
-
 using System.Drawing;
 using System.Web.UI.HtmlControls;
-
 using System.Reflection;
-
 using System.Threading;
 using System.Threading.Tasks;
-
 using System.Web.Script.Services;
 using System.ServiceModel;
 using System.Activities.Statements;
 using System.Runtime.InteropServices.ComTypes;
 using System.Collections;
 
-
 public partial class agreement : System.Web.UI.Page
-
 {
     private const string FtpFolder = "ftp://msksoftware.co.in/httpdocs/forestdoc/";
     private const string FtpUsername = "mskuser";
@@ -112,11 +106,9 @@ public partial class agreement : System.Web.UI.Page
         }
 
         return string.Format("https://msksoftware.co.in/httpdocs/forestdoc/{0}profile.{1}", pathParts[0], pathParts[1]);
-
-
     }
 
-    public class AgreementDetails : IDisposable
+    public class AgreementDetails
     {
         public string ClientName { get; set; }
         public string ClientID { get; set; }
@@ -139,48 +131,14 @@ public partial class agreement : System.Web.UI.Page
         public string Pic { get; set; }
         public string Path { get; set; }
         public string IFSC { get; set; }
-
-        // IDisposable implementation
-        private bool _disposed = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    // Dispose managed resources here, if needed
-                }
-
-                // Dispose unmanaged resources here, if any
-                _disposed = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~AgreementDetails()
-        {
-            Dispose(false);
-        }
     }
 
-
-
-
-
-
-
     [WebMethod(EnableSession = true)]
-    public static string abcd(IEnumerable<AgreementDetails> formData)
+    public static string abcd(List<AgreementDetails> formData)
     {
         try
         {
-            // Convert the IEnumerable to a List for processing
+            // Convert the List for processing
             List<AgreementDetails> formDataList = formData.ToList();
 
             string constr = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
@@ -250,11 +208,6 @@ public partial class agreement : System.Web.UI.Page
         }
     }
 
-
-
-
-
-
     [WebMethod]
     public static string GenerateNewAgreementID(string clientID)
     {
@@ -281,7 +234,6 @@ public partial class agreement : System.Web.UI.Page
             // Generate the AgreementID using the new Id
             newAgreementID = prefix + "_" + newId;
 
-
             // Update the AgreementID field
             SqlCommand updateCmd = new SqlCommand(
                 "UPDATE AgreementID SET AgreementID = @AgreementID WHERE Id = @Id", conn);
@@ -292,7 +244,6 @@ public partial class agreement : System.Web.UI.Page
 
         return newAgreementID;
     }
-
 
     [WebMethod]
     public static object GetBankDetails(string clientId)
@@ -319,7 +270,4 @@ public partial class agreement : System.Web.UI.Page
 
         return null; // Return null if no record is found
     }
-
-
 }
-
