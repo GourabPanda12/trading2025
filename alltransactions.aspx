@@ -31,7 +31,7 @@
                 const filterValue = $(this).val();
                 table.column(6).search(filterValue).draw();
             });
-      ;
+      
 
         // AJAX call to fetch data from the server
         $.ajax({
@@ -82,15 +82,6 @@
                   const myDocPath = $(this).data('path');
                   const referBy = $(this).data('referby');
 
-        //          alert(`Action button clicked!
-        //Client ID: ${clientId}
-        //Client Name: ${clientName}
-        //Transaction Amount: ${amount}
-        //Refer By: ${referBy}
-        //Document Path: ${myDocPath}`);
-
-                  // Add your action logic here
-                  // Example: Redirect with multiple parameters
                   window.location.href = `agreement.aspx?ClientId=${clientId}&ClientName=${encodeURIComponent(clientName)}&Amount=${amount}&ReferBy=${encodeURIComponent(referBy)}&MyDocPath=${encodeURIComponent(myDocPath)}`;
                        });
 

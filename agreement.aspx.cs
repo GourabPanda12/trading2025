@@ -236,10 +236,10 @@ public partial class agreement : System.Web.UI.Page
 
         // Query to fetch the latest AgreementID for the given ClientID
         string query = @"
-        SELECT TOP 1 [AgreementID]
-        FROM [tradedata].[tradeadmin].[AgreementID]
-        WHERE [ClientID] = @ClientID
-        ORDER BY [CreatedDate] DESC"; // Ordering by CreatedDate in descending order to get the latest one
+    SELECT TOP 1 [AgreementID]
+    FROM [tradedata].[tradeadmin].[AgreementID]
+    WHERE [ClientID] = @ClientID
+    ORDER BY [CreatedDate] DESC"; // Ordering by CreatedDate in descending order to get the latest one
 
         string agreementID = "";
 
@@ -261,6 +261,85 @@ public partial class agreement : System.Web.UI.Page
         }
 
         return agreementID;  // Return the latest AgreementID to the frontend
+    }
+
+    [WebMethod]
+    public static AgreementDetailsx FetchAgreementDetails(string agreementID)
+    {
+        // Connection string (replace with your actual connection string)
+        string constr = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
+
+        // Query to fetch the agreement details using AgreementID
+        string query = @"
+    SELECT 
+        [StartDate], 
+        [Term], 
+        [expireDate]
+    FROM [tradedata].[tradeadmin].[aggrement]
+    WHERE [AgreementID] = @AgreementID";
+
+        // Initialize the AgreementDetails object
+        AgreementDetailsx agreementDetails = new AgreementDetailsx
+        {
+            StartDate = string.Empty,
+            Term = string.Empty,
+            ExpireDate = string.Empty
+        };
+
+        // Using SQL connection and command
+        using (SqlConnection conn = new SqlConnection(constr))
+        {
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@AgreementID", agreementID);
+                    conn.Open();
+
+                    // Execute the query using SqlDataReader
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            // Read data from the reader
+                            while (reader.Read())
+                            {
+                                agreementDetails.StartDate = reader["StartDate"] != DBNull.Value
+                                    ? Convert.ToDateTime(reader["StartDate"]).ToString("yyyy-MM-dd")
+                                    : string.Empty;
+
+                                agreementDetails.Term = reader["Term"] != DBNull.Value
+                                    ? reader["Term"].ToString()
+                                    : string.Empty;
+
+                                agreementDetails.ExpireDate = reader["ExpireDate"] != DBNull.Value
+                                    ? Convert.ToDateTime(reader["ExpireDate"]).ToString("yyyy-MM-dd")
+                                    : string.Empty;
+                            }
+                        }
+                        else
+                        {
+                            // No rows found
+                            throw new Exception("No data found for the given AgreementID.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception
+                throw new Exception("Error fetching agreement details: " + ex.Message);
+            }
+        }
+
+        return agreementDetails; // Return the details to the frontend
+    }
+
+    public class AgreementDetailsx
+    {
+        public string StartDate { get; set; }
+        public string Term { get; set; }
+        public string ExpireDate { get; set; }
     }
 
 

@@ -319,24 +319,47 @@
              
 $("#btn2").click(function () {
     const clientID = $("#ClientID").val();  // Get the client ID from input field
-
-    // AJAX call to fetch the latest AgreementID for the given ClientID
+  
+    // First AJAX call to fetch AgreementID
     $.ajax({
         type: "POST",
-        url: "agreement.aspx/ExistingclientID",  // The backend method URL
+        url: "agreement.aspx/ExistingclientID",  // The backend method URL to fetch AgreementID
         data: JSON.stringify({ clientID: clientID }),  // Sending clientID to the backend
         contentType: "application/json; charset=utf-8",  // Data type
         dataType: "json",  // Expecting a JSON response
         success: function (response) {
             if (response.d) {  // Check if response is valid
-                $("#AgreementID").val(response.d);  // Set the AgreementID to the input field
+                const agreementID = response.d;  // Store the AgreementID
+                $("#AgreementID").val(agreementID);  // Set the AgreementID to the input field
+
+                // Second AJAX call to fetch agreement details using the AgreementID
+                $.ajax({
+                    type: "POST",
+                    url: "agreement.aspx/FetchAgreementDetails",  // The backend method URL to fetch agreement details
+                    data: JSON.stringify({  agreementID: agreementID }),  // Sending both clientID and AgreementID to the backend
+                    contentType: "application/json; charset=utf-8",  // Data type
+                    dataType: "json",  // Expecting a JSON response
+                    success: function (detailsResponse) {
+                        if (detailsResponse.d) {  // Check if response is valid
+                            var details = detailsResponse.d;
+                            // Set the fetched values to the input fields
+                            $("#StartDate").val(details.StartDate);  // Set Start Date
+                            $("#Term").val(details.Term);            // Set Term
+                            $("#expireDate").val(details.ExpireDate); // Set Expire Date
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching agreement details:", error);
+                    }
+                });
             }
         },
         error: function (xhr, status, error) {
             console.error("Error fetching AgreementID:", error);
         }
     });
-    });
+});
+
           
                
 
