@@ -316,7 +316,29 @@
                     alert("Invalid Client ID. It must be at least 5 characters long.");
                 }
             });
+             
+$("#btn2").click(function () {
+    const clientID = $("#ClientID").val();  // Get the client ID from input field
 
+    // AJAX call to fetch the latest AgreementID for the given ClientID
+    $.ajax({
+        type: "POST",
+        url: "agreement.aspx/ExistingclientID",  // The backend method URL
+        data: JSON.stringify({ clientID: clientID }),  // Sending clientID to the backend
+        contentType: "application/json; charset=utf-8",  // Data type
+        dataType: "json",  // Expecting a JSON response
+        success: function (response) {
+            if (response.d) {  // Check if response is valid
+                $("#AgreementID").val(response.d);  // Set the AgreementID to the input field
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching AgreementID:", error);
+        }
+    });
+    });
+          
+               
 
             $("#StartDate, #Term").on("change", function () {
                 // Get the start date value
@@ -460,7 +482,7 @@
                                     <label class="form-label fw-bold">Agreement document:</label>
                                     <input value="Pending" readonly class="form-control" id="Agreementdocument"></input>
 
-                                 
+
                                 </div>
 
                                 <div class="mb-3">
@@ -473,8 +495,6 @@
                                 <div class="mb-3">
                                     <label for="percentage" class="form-label fw-bold">Percentage To My Team:</label>
                                     <input type="number" class="form-control" id="percentage" required>
-                                        
-                                    
                                 </div>
 
 
@@ -526,14 +546,14 @@
                                             <input type="number" class="form-control" id="profitclient" required>
                                         </div>
 
-                                               <div class="mb-3">
-                                        <label class="form-label fw-bold">Current Transaction Start::</label>
-                                        <input type="date" class="form-control" id="CurrentTransaction" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Days For Investment:</label>
-                                        <input type="number" class="form-control" id="DaysInvestment" required>
-                                    </div>  
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Current Transaction Start::</label>
+                                            <input type="date" class="form-control" id="CurrentTransaction" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Days For Investment:</label>
+                                            <input type="number" class="form-control" id="DaysInvestment" required>
+                                        </div>
 
                                     </div>
                                     <div class="mb-3">
@@ -542,18 +562,18 @@
                                             <input type="text" class="form-control" id="Accountlink" required>
                                         </div>
                                         <span class="create-agreement-id mt-3">
-                                                         
-                                                <button type="button" class="btn new" id="btn5">Primary Account</button>                                          
+
+                                            <button type="button" class="btn new" id="btn5">Primary Account</button>
                                         </span>
 
                                     </div>
-                                       <div class="mb-3">
+                                    <div class="mb-3">
                                         <label class="form-label fw-bold">IFSC Code</label>
                                         <input type="text" class="form-control" id="IFSC" required>
                                     </div>
 
 
-                             
+
 
 
                                 </div>
@@ -564,7 +584,7 @@
                             <!-- Hidden fields -->
 
                             <input type="hidden" value="" id="hiden" runat="server" />
-                            <input type="hidden" value=""  id="hidden" runat="server" />
+                            <input type="hidden" value="" id="hidden" runat="server" />
 
 
                         </div>

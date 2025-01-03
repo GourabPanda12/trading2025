@@ -229,6 +229,41 @@ public partial class agreement : System.Web.UI.Page
 
         return newAgreementID;
     }
+    [WebMethod]
+    public static string ExistingclientID(string clientID)
+    {
+        // Connection string (replace with your actual connection string)
+        string constr = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
+
+        // Query to fetch the latest AgreementID for the given ClientID
+        string query = @"
+        SELECT TOP 1 [AgreementID]
+        FROM [tradedata].[tradeadmin].[AgreementID]
+        WHERE [ClientID] = @ClientID
+        ORDER BY [CreatedDate] DESC"; // Ordering by CreatedDate in descending order to get the latest one
+
+        string agreementID = "";
+
+        // Using SQL connection and command
+        using (SqlConnection conn = new SqlConnection(constr))
+        {
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@ClientID", clientID);
+                conn.Open();
+
+                // Execute the query and get the AgreementID
+                var result = cmd.ExecuteScalar();
+                if (result != null)
+                {
+                    agreementID = result.ToString();  // If a result is found, store the AgreementID
+                }
+            }
+        }
+
+        return agreementID;  // Return the latest AgreementID to the frontend
+    }
+
 
     [WebMethod]
     public static object GetBankDetails(string clientId)
