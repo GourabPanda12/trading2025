@@ -182,7 +182,6 @@ public partial class agreement : System.Web.UI.Page
                     cmd.ExecuteNonQuery();
                 }
             }
-
             return "Success";
         }
         catch (Exception ex)

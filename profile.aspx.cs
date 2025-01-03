@@ -24,8 +24,8 @@ public partial class profile : System.Web.UI.Page
         public string ReferBy { get; set; }
         public string NomineeName { get; set; }
         public string District { get; set; }
-       
-       
+
+
 
         // To keep track of whether Dispose has been called.
         private bool disposed = false;
@@ -99,7 +99,7 @@ public partial class profile : System.Web.UI.Page
                             ReferBy = reader["ReferBy"].ToString(),
                             NomineeName = reader["NomineeName"].ToString(),
                             District = reader["Address"].ToString(),
-                        
+
                         });
                     }
                 }
@@ -109,9 +109,84 @@ public partial class profile : System.Web.UI.Page
         return clientDetails;
     }
 
+    public class AgreementDetails
+    {
+        public string AgreementID { get; set; }
+        public decimal TotalFund { get; set; }
+        public string Term { get; set; }
+        public string StartDate { get; set; }
+        public string ExpireDate { get; set; }
+        public string Priority { get; set; }
+        public string Status { get; set; }
+        public int NoOfPayments { get; set; }
+    }
 
+    [WebMethod]
+    public static List<AgreementDetails> GetAgreementsByClientId(string clientId)
+    {
+        List<AgreementDetails> agreements = new List<AgreementDetails>();
+        string connectionString = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
 
+        string query = @"
+        SELECT 
+            AgreementID, 
+            TotalFund,
+            Term, 
+            StartDate, 
+            ExpireDate, 
+            Priority, 
+            COUNT(*) AS NoOfPayments
+        FROM 
+            [tradedata].[tradeadmin].[aggrement] 
+        WHERE 
+            [ClientId] = @ClientId
+        GROUP BY 
+            AgreementID, 
+            TotalFund, 
+            Term, 
+            StartDate, 
+            ExpireDate, 
+            Priority;
+    ";
 
+        try
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@ClientId", clientId);
+                    con.Open();
 
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var currentDate = DateTime.Now;
+                            agreements.Add(new AgreementDetails
+                            {
+                                AgreementID = reader["AgreementID"].ToString(),
+                                TotalFund = Convert.ToDecimal(reader["TotalFund"]),
+                                Term = reader["Term"].ToString(),
+                                StartDate = Convert.ToDateTime(reader["StartDate"]).ToString("dd/MM/yyyy"),
+                                ExpireDate = Convert.ToDateTime(reader["ExpireDate"]).ToString("dd/MM/yyyy"),
+                                Priority = reader["Priority"].ToString(),
+                                Status = Convert.ToDateTime(reader["StartDate"]) <= currentDate && Convert.ToDateTime(reader["ExpireDate"]) >= currentDate
+                ? "Running"
+                : "Expired",
+                                NoOfPayments = Convert.ToInt32(reader["NoOfPayments"])
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log the exception (Consider using a logging framework like log4net or NLog)
+            throw new Exception("Error fetching agreements: " + ex.Message, ex);
+        }
 
+        return agreements;
+    }
 }
