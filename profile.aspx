@@ -70,8 +70,47 @@
                 alert("Client ID not provided in the URL.");
             }
 
+            if (clientId) {
+
+                $.ajax({
+                    type: "POST",
+                    url: "profile.aspx/GetAgreementsByClientId",
+                    data: JSON.stringify({ clientId: clientId }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        const agreements = response.d;
+
+                        let tableBody = "";
 
 
+                        agreements.forEach((agreement, index) => {
+                            tableBody += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${agreement.AgreementID}</td>
+                                 <td>${agreement.TotalFund}</td> 
+                                 <td>${agreement.Term}</td>
+                                   <td>${agreement.StartDate}</td>
+                                   <td>${agreement.ExpireDate}</td>
+                                     <td>${agreement.Priority}</td>
+                                      <td>${agreement.Status}</td>
+                                      <td>${agreement.NoOfPayments}</td>
+                                     <td><button class="btn btn-primary btn-sm">Action</button></td>
+
+                            </tr>`
+                        });
+
+                        $("#data-table tbody").html(tableBody);
+                    },
+                    error: function (error) {
+                        console.error("Error fetching data:", error.responseText);
+                    }
+                });
+            } else {
+                console.error("ClientId not found in the URL.");
+            }
+           
         });
     </script>
 
@@ -273,7 +312,7 @@ table a {
                <div calss="profile">
                                         <div class="profile-header">
             <div class="card current-funds">500,000.00<br><span>Current Funds</span></div>
-            <div class="card total-profit">76,000.00<br><span>Total Profit</span></div>
+            <div class="card total-profit">76,000.00<br><span>No. of Payments</span></div>
             <div class="card total-agreement">08<br><span>Total Agreement</span></div>
             <div class="card closed-agreement">02<br><span>Closed Agreement</span></div>
         </div>
@@ -325,131 +364,12 @@ table a {
             <th>Expiry Date</th>
             <th>Priority</th>
             <th>Status</th>
-            <th>Total Profit (INR)</th>
+            <th>No of Payments</th>
             <th>Action</th>
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>1</td>
-            <td>A12345</td>
-            <td>₹82,00,000</td>
-            <td>2 years</td>
-            <td>2022-01-01</td>
-            <td>2024-01-01</td>
-            <td>High</td>
-            <td><span class="badge bg-warning">Pending</span></td>
-            <td>₹20,50,000</td>
-            <td><a href="#" class="btn btn-info btn-sm">Read More</a></td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>B67890</td>
-            <td>₹1,64,00,000</td>
-            <td>3 years</td>
-            <td>2021-05-01</td>
-            <td>2024-05-01</td>
-            <td>Medium</td>
-            <td><span class="badge bg-success">Running</span></td>
-            <td>₹41,00,000</td>
-            <td><a href="#" class="btn btn-info btn-sm">Read More</a></td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>C11223</td>
-            <td>₹1,23,00,000</td>
-            <td>1 year</td>
-            <td>2023-03-01</td>
-            <td>2024-03-01</td>
-            <td>Low</td>
-            <td><span class="badge bg-danger">Closed</span></td>
-            <td>₹8,20,000</td>
-            <td><a href="#" class="btn btn-info btn-sm">Read More</a></td>
-        </tr>
-        <tr>
-            <td>4</td>
-            <td>D45678</td>
-            <td>₹4,10,00,000</td>
-            <td>5 years</td>
-            <td>2020-01-01</td>
-            <td>2025-01-01</td>
-            <td>High</td>
-            <td><span class="badge bg-success">Running</span></td>
-            <td>₹98,40,000</td>
-            <td><a href="#" class="btn btn-info btn-sm">Read More</a></td>
-        </tr>
-        <tr>
-            <td>5</td>
-            <td>E12367</td>
-            <td>₹2,46,00,000</td>
-            <td>4 years</td>
-            <td>2022-07-01</td>
-            <td>2026-07-01</td>
-            <td>Medium</td>
-            <td><span class="badge bg-warning">Pending</span></td>
-            <td>₹65,60,000</td>
-            <td><a href="#" class="btn btn-info btn-sm">Read More</a></td>
-        </tr>
-        <tr>
-            <td>6</td>
-            <td>F56789</td>
-            <td>₹98,40,000</td>
-            <td>2 years</td>
-            <td>2023-02-01</td>
-            <td>2025-02-01</td>
-            <td>High</td>
-            <td><span class="badge bg-danger">Closed</span></td>
-            <td>₹36,90,000</td>
-            <td><a href="#" class="btn btn-info btn-sm">Read More</a></td>
-        </tr>
-        <tr>
-            <td>7</td>
-            <td>G23456</td>
-            <td>₹2,05,00,000</td>
-            <td>3 years</td>
-            <td>2022-04-01</td>
-            <td>2025-04-01</td>
-            <td>Low</td>
-            <td><span class="badge bg-warning">Pending</span></td>
-            <td>₹49,20,000</td>
-            <td><a href="#" class="btn btn-info btn-sm">Read More</a></td>
-        </tr>
-        <tr>
-            <td>8</td>
-            <td>H34567</td>
-            <td>₹1,43,50,000</td>
-            <td>1 year</td>
-            <td>2023-01-01</td>
-            <td>2024-01-01</td>
-            <td>Medium</td>
-            <td><span class="badge bg-success">Running</span></td>
-            <td>₹28,70,000</td>
-            <td><a href="#" class="btn btn-info btn-sm">Read More</a></td>
-        </tr>
-        <tr>
-            <td>9</td>
-            <td>I23456</td>
-            <td>₹1,80,40,000</td>
-            <td>2 years</td>
-            <td>2021-08-01</td>
-            <td>2023-08-01</td>
-            <td>High</td>
-            <td><span class="badge bg-danger">Closed</span></td>
-            <td>₹45,10,000</td>
-            <td><a href="#" class="btn btn-info btn-sm">Read More</a></td>
-        </tr>
-        <tr>
-            <td>10</td>
-            <td>J78901</td>
-            <td>₹2,87,00,000</td>
-            <td>4 years</td>
-            <td>2020-10-01</td>
-            <td>2024-10-01</td>
-            <td>Medium</td>
-            <td><span class="badge bg-warning">Pending</span></td>
-            <td>₹82,00,000</td>
-            <td><a href="#" class="btn btn-info btn-sm">Read More</a></td>
-        </tr>
+       
     </tbody>
 </table>
             </div>
