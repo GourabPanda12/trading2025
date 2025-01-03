@@ -1,27 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Data;
 using System.IO;
 using System.Data.SqlClient;
-using System.Text;
 using System.Configuration;
 using System.Web.Services;
 using System.Net;
-using System.Text.RegularExpressions;
-using System.Drawing;
-using System.Web.UI.HtmlControls;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web.Script.Services;
-using System.ServiceModel;
 using System.Activities.Statements;
-using System.Runtime.InteropServices.ComTypes;
-using System.Collections;
+
 
 public partial class agreement : System.Web.UI.Page
 {
@@ -126,76 +113,73 @@ public partial class agreement : System.Web.UI.Page
         public DateTime ExpireDate { get; set; }
         public decimal ProfitClient { get; set; }
         public string AccountLink { get; set; }
-        public decimal CurrentTransaction { get; set; }
+        public DateTime CurrentTransaction { get; set; }
         public int DaysInvestment { get; set; }
         public string Pic { get; set; }
         public string Path { get; set; }
         public string IFSC { get; set; }
     }
 
-    [WebMethod(EnableSession = true)]
-    public static string abcd(List<AgreementDetails> formData)
+    [WebMethod]
+    public static string abcd(AgreementDetails formData)
     {
         try
         {
-            // Convert the List for processing
-            List<AgreementDetails> formDataList = formData.ToList();
+            string picFilePath = string.Empty;
+
+            // Check if Pic and Path are provided
+            if (!string.IsNullOrEmpty(formData.Pic) && !string.IsNullOrEmpty(formData.Path))
+            {
+                bool picUploaded = UploadFileToFtp(formData.Pic, formData.Path);
+                if (picUploaded)
+                {
+                    picFilePath = "https://msksoftware.co.in/forestdoc/" + formData.Path;
+                }
+                else
+                {
+                    return "Error: File upload failed.";
+                }
+            }
 
             string constr = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
 
-            foreach (var data in formDataList)
+            using (SqlConnection con = new SqlConnection(constr))
             {
-                // Handle file uploads
-                var uploadedPaths = new Dictionary<string, string>();
-                if (!string.IsNullOrEmpty(data.Path) && UploadFileToFtp(data.Pic, data.Path))
+                const string insertQuery = @"
+            INSERT INTO [tradedata].[tradeadmin].[aggrement] 
+            (ClientName, ClientID, TransactionAmount, ClientReceipt, PaymentReceipt, AgreementID, 
+             AgreementDocument, Refer, Percentage, Priority, TotalFund, StartDate, Term, 
+             ExpireDate, ProfitClient, AccountLink, CurrentTransaction, DaysInvestment, ClientReceiptpath, IFSC)
+            VALUES 
+            (@ClientName, @ClientID, @TransactionAmount, @ClientReceipt, @PaymentReceipt, @AgreementID, 
+             @AgreementDocument, @Refer, @Percentage, @Priority, @TotalFund, @StartDate, @Term, 
+             @ExpireDate, @ProfitClient, @AccountLink, @CurrentTransaction, @DaysInvestment, @ClientReceiptpath, @IFSC)";
+
+                using (SqlCommand cmd = new SqlCommand(insertQuery, con))
                 {
-                    uploadedPaths["ClientReceiptpath"] = GetUploadedPath("ClientReceiptpath", data.Path);
-                }
+                    cmd.Parameters.AddWithValue("@ClientName", formData.ClientName ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@ClientID", formData.ClientID ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@TransactionAmount", formData.TransactionAmount);
+                    cmd.Parameters.AddWithValue("@ClientReceipt", formData.ClientReceipt ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@PaymentReceipt", formData.PaymentReceipt ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@AgreementID", formData.AgreementID ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@AgreementDocument", formData.AgreementDocument ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@Refer", formData.Refer ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@Percentage", formData.Percentage);
+                    cmd.Parameters.AddWithValue("@Priority", formData.Priority ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@TotalFund", formData.TotalFund);
+                    cmd.Parameters.AddWithValue("@StartDate", formData.StartDate);
+                    cmd.Parameters.AddWithValue("@Term", formData.Term);
+                    cmd.Parameters.AddWithValue("@ExpireDate", formData.ExpireDate);
+                    cmd.Parameters.AddWithValue("@ProfitClient", formData.ProfitClient);
+                    cmd.Parameters.AddWithValue("@AccountLink", formData.AccountLink ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@CurrentTransaction", formData.CurrentTransaction);
+                    cmd.Parameters.AddWithValue("@DaysInvestment", formData.DaysInvestment);
+                    cmd.Parameters.AddWithValue("@ClientReceiptpath", picFilePath ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@IFSC", formData.IFSC ?? string.Empty);
 
-                // Insert into database
-                using (SqlConnection con = new SqlConnection(constr))
-                {
-                    const string insertQuery = @"
-                INSERT INTO [tradedata].[tradeadmin].[aggrement] 
-                (clientName, ClientID, TransactionAmount, ClientReceipt, PaymentReceipt, 
-                 AgreementID, Agreementdocument, refer, percentage, 
-                 Priority, TotalFund, StartDate, Term, expireDate, 
-                 profitclient, Accountlink, CurrentTransaction, DaysInvestment, ClientReceiptpath, ifsc) 
-                VALUES 
-                (@clientName, @ClientID, @TransactionAmount, @ClientReceipt, @PaymentReceipt, 
-                 @AgreementID, @Agreementdocument, @refer, @percentage, 
-                 @Priority, @TotalFund, @StartDate, @Term, @expireDate, 
-                 @profitclient, @Accountlink, @CurrentTransaction, @DaysInvestment, @ClientReceiptpath, @ifsc)";
-
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
-                    {
-                        cmd.Parameters.AddWithValue("@clientName", data.ClientName ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@ClientID", data.ClientID ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@TransactionAmount", data.TransactionAmount);
-                        cmd.Parameters.AddWithValue("@ClientReceipt", data.ClientReceipt ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@PaymentReceipt", data.PaymentReceipt ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@AgreementID", data.AgreementID ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@Agreementdocument", data.AgreementDocument ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@refer", data.Refer ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@percentage", data.Percentage);
-                        cmd.Parameters.AddWithValue("@Priority", data.Priority ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@TotalFund", data.TotalFund);
-                        cmd.Parameters.AddWithValue("@StartDate", data.StartDate);
-                        cmd.Parameters.AddWithValue("@Term", data.Term);
-                        cmd.Parameters.AddWithValue("@expireDate", data.ExpireDate);
-                        cmd.Parameters.AddWithValue("@profitclient", data.ProfitClient);
-                        cmd.Parameters.AddWithValue("@Accountlink", data.AccountLink ?? string.Empty);
-                        cmd.Parameters.AddWithValue("@CurrentTransaction", data.CurrentTransaction);
-                        cmd.Parameters.AddWithValue("@DaysInvestment", data.DaysInvestment);
-                        cmd.Parameters.AddWithValue("@ifsc", data.IFSC);
-
-                        // Uploaded file paths
-                        string clientReceiptPath = uploadedPaths.ContainsKey("ClientReceiptpath") ? uploadedPaths["ClientReceiptpath"] : string.Empty;
-                        cmd.Parameters.AddWithValue("@ClientReceiptpath", clientReceiptPath);
-
-                        con.Open();
-                        cmd.ExecuteNonQuery();
-                    }
+                    con.Open();
+                    cmd.ExecuteNonQuery();
                 }
             }
 
@@ -203,8 +187,9 @@ public partial class agreement : System.Web.UI.Page
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine("ex.Message");
-            return "Error: ex.Message";
+            // Log the error for debugging purposes
+            System.Diagnostics.Debug.WriteLine(ex.Message);
+            return ex.Message;
         }
     }
 
