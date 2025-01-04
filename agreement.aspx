@@ -346,9 +346,8 @@ $("#btn2").click(function () {
                             $("#StartDate").val(details.StartDate);  // Set Start Date
                             $("#Term").val(details.Term);            // Set Term
 
-                            var totalFund = parseFloat(details.TotalFund) || 0; // Ensure it's a number
-                          // Ensure it's a number
-                            var transactionAmount = parseFloat($("#TransactionAmount").val()) || 0;
+                            var totalFund = parseFloat(details.TotalFund) || 0; // Ensure it's a number                         
+                            var transactionAmount = parseFloat($("#TransactionAmount").val()) || 0;// Ensure it's a number
 
                             var combinedTotal = totalFund + transactionAmount;
                             $("#TotalFund").val(combinedTotal);

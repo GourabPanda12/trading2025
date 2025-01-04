@@ -12,6 +12,7 @@
     <title></title>
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
        <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" />
+                <ucx:MyUserControl1 runat="server" />
 
         <style>
         /* General Reset */
@@ -225,6 +226,56 @@ table a {
             background-color:#0a671f;
         }
     </style>
+
+
+        <script>
+            $(document).ready(function () {
+                var table = $('#data-table').DataTable({
+                    pageLength: 20,
+                    responsive: true,
+                    dom: 'Bfrtip'
+                });
+
+                $('#status-filter').on('change', function () {
+                    const filterValue = $(this).val();
+                    table.column(6).search(filterValue).draw();
+                });
+                $.ajax({
+                    type: "POST",
+                    url: "agreementlist.aspx/GetAgreementData",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+                        var data = response.d; // Deserialize response data
+                        var tableBody = $("#data-table tbody");
+                        tableBody.empty(); // Clear existing rows
+
+                        // Iterate through the data and append to the table
+                        $.each(data, function (index, item) {
+                            var row = `<tr>
+                        <td>${index + 1}</td>
+                        <td>${item.AgreementID}</td>
+                        <td>${item.ClientName}</td>
+                        <td>${item.TotalFund}</td>
+                        <td>${item.Refer}</td>
+                        <td>${item.Priority}</td>
+                        <td>${(item.StartDate)}</td>
+                        <td>${(item.ExpireDate)}</td>
+                        <td>${item.ProfitClient}</td>
+                    </tr>`;
+                            tableBody.append(row);
+                        });
+                    },
+                    error: function (error) {
+                        console.error("Error fetching data:", error);
+                    }
+                });
+            });
+
+        </script>
+
+
+
 </head>
 <body>
     <form id="form1" runat="server">
@@ -265,245 +316,14 @@ table a {
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                <td>AGR001</td>
-                <td>John Doe</td>
-                <td>₹10,000</td>
-                <td>Team A</td>
-                <td class="priority">High</td>
-                <td>2024-01-01</td>
-                <td>2024-12-31</td>
-                <td><span class="status active">Active</span></td>
-                <td>₹2,500</td>
-                <td>Referral X</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>AGR002</td>
-                <td>Jane Smith</td>
-                <td>₹15,000</td>
-                <td>Team B</td>
-                <td class="priority">Medium</td>
-                <td>2024-03-01</td>
-                <td>2025-02-28</td>
-                <td><span class="status pending">Pending</span></td>
-                <td>₹3,000</td>
-                <td>Referral Y</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>AGR003</td>
-                <td>Michael Brown</td>
-                <td>₹8,000</td>
-                <td>Team C</td>
-                <td class="priority">Low</td>
-                <td>2024-06-15</td>
-                <td>2024-12-15</td>
-                <td><span class="status inactive">Inactive</span></td>
-                <td>₹1,500</td>
-                <td>Referral Z</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>AGR004</td>
-                <td>Emily Davis</td>
-                <td>₹12,500</td>
-                <td>Team D</td>
-                <td class="priority">High</td>
-                <td>2024-02-01</td>
-                <td>2025-01-31</td>
-                <td><span class="status active">Active</span></td>
-                <td>₹2,800</td>
-                <td>Referral X</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>AGR005</td>
-                <td>Chris Wilson</td>
-                <td>₹20,000</td>
-                <td>Team E</td>
-                <td class="priority">Medium</td>
-                <td>2024-05-01</td>
-                <td>2025-05-01</td>
-                <td><span class="status pending">Pending</span></td>
-                <td>₹5,000</td>
-                <td>Referral Y</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>6</td>
-                <td>AGR006</td>
-                <td>Anna Lee</td>
-                <td>₹7,000</td>
-                <td>Team F</td>
-                <td class="priority">Low</td>
-                <td>2024-07-01</td>
-                <td>2024-12-31</td>
-                <td><span class="status inactive">Inactive</span></td>
-                <td>₹1,200</td>
-                <td>Referral Z</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>7</td>
-                <td>AGR007</td>
-                <td>Robert Young</td>
-                <td>₹18,000</td>
-                <td>Team G</td>
-                <td class="priority">High</td>
-                <td>2024-04-01</td>
-                <td>2025-03-31</td>
-                <td><span class="status active">Active</span></td>
-                <td>₹4,200</td>
-                <td>Referral X</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>8</td>
-                <td>AGR008</td>
-                <td>Sarah Clark</td>
-                <td>₹9,500</td>
-                <td>Team H</td>
-                <td class="priority">Medium</td>
-                <td>2024-06-01</td>
-                <td>2025-05-31</td>
-                <td><span class="status pending">Pending</span></td>
-                <td>₹1,800</td>
-                <td>Referral Z</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>9</td>
-                <td>AGR009</td>
-                <td>Paul Walker</td>
-                <td>₹22,000</td>
-                <td>Team I</td>
-                <td class="priority">High</td>
-                <td>2024-08-01</td>
-                <td>2025-07-31</td>
-                <td><span class="status active">Active</span></td>
-                <td>₹6,000</td>
-                <td>Referral X</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>10</td>
-                <td>AGR010</td>
-                <td>Laura White</td>
-                <td>₹11,000</td>
-                <td>Team J</td>
-                <td class="priority">Low</td>
-                <td>2024-09-01</td>
-                <td>2024-12-31</td>
-                <td><span class="status inactive">Inactive</span></td>
-                <td>₹2,000</td>
-                <td>Referral Y</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>11</td>
-                <td>AGR011</td>
-                <td>Tom Green</td>
-                <td>₹16,000</td>
-                <td>Team K</td>
-                <td class="priority">Medium</td>
-                <td>2024-10-01</td>
-                <td>2025-09-30</td>
-                <td><span class="status pending">Pending</span></td>
-                <td>₹3,500</td>
-                <td>Referral Z</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>12</td>
-                <td>AGR012</td>
-                <td>Alice Moore</td>
-                <td>₹25,000</td>
-                <td>Team L</td>
-                <td class="priority">High</td>
-                <td>2024-11-01</td>
-                <td>2025-10-31</td>
-                <td><span class="status active">Active</span></td>
-                <td>₹7,500</td>
-                <td>Referral X</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>13</td>
-                <td>AGR013</td>
-                <td>Kevin Adams</td>
-                <td>₹6,000</td>
-                <td>Team M</td>
-                <td class="priority">Low</td>
-                <td>2024-12-01</td>
-                <td>2025-03-31</td>
-                <td><span class="status inactive">Inactive</span></td>
-                <td>₹1,000</td>
-                <td>Referral Y</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>14</td>
-                <td>AGR014</td>
-                <td>Emma King</td>
-                <td>₹14,000</td>
-                <td>Team N</td>
-                <td class="priority">Medium</td>
-                <td>2025-01-01</td>
-                <td>2025-12-31</td>
-                <td><span class="status pending">Pending</span></td>
-                <td>₹2,800</td>
-                <td>Referral Z</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
-            <tr>
-                <td>15</td>
-                <td>AGR015</td>
-                <td>Olivia Perez</td>
-                <td>₹28,000</td>
-                <td>Team O</td>
-                <td class="priority">High</td>
-                <td>2025-02-01</td>
-                <td>2026-01-31</td>
-                <td><span class="status active">Active</span></td>
-                <td>₹9,000</td>
-                <td>Referral X</td>
-                <td><button class="action-btn">View Details</button></td>
-            </tr>
+          
         </tbody>
     </table>
 </div>
         </div>
     </form>
 
-        <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    <!-- DataTable JS -->
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-
-    <script>
-        $(document).ready(function () {
-            var table = $('#data-table').DataTable({
-                pageLength: 20,
-                responsive: true,
-                dom: 'Bfrtip'
-            });
-        
-            $('#status-filter').on('change', function () {
-                const filterValue = $(this).val();
-                table.column(6).search(filterValue).draw();
-            });
-
-        });
-
-    </script>
 </body>
 </html>
 
