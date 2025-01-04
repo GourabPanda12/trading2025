@@ -274,7 +274,7 @@ public partial class agreement : System.Web.UI.Page
     SELECT 
         [StartDate], 
         [Term], 
-        [TotalFund]
+        [expireDate]
     FROM [tradedata].[tradeadmin].[aggrement]
     WHERE [AgreementID] = @AgreementID";
 
@@ -283,7 +283,7 @@ public partial class agreement : System.Web.UI.Page
         {
             StartDate = string.Empty,
             Term = string.Empty,
-            TotalFund = string.Empty,
+            ExpireDate = string.Empty
         };
 
         // Using SQL connection and command
@@ -312,10 +312,8 @@ public partial class agreement : System.Web.UI.Page
                                     ? reader["Term"].ToString()
                                     : string.Empty;
 
-                               
-
-                                agreementDetails.TotalFund = reader["TotalFund"] != DBNull.Value
-                                    ? reader["TotalFund"].ToString()
+                                agreementDetails.ExpireDate = reader["ExpireDate"] != DBNull.Value
+                                    ? Convert.ToDateTime(reader["ExpireDate"]).ToString("yyyy-MM-dd")
                                     : string.Empty;
                             }
                         }
@@ -341,7 +339,7 @@ public partial class agreement : System.Web.UI.Page
     {
         public string StartDate { get; set; }
         public string Term { get; set; }
-        public string TotalFund { get; set; }
+        public string ExpireDate { get; set; }
     }
 
 
@@ -370,4 +368,41 @@ public partial class agreement : System.Web.UI.Page
 
         return null; // Return null if no record is found
     }
+
+
+    [WebMethod]
+    public static string saveProfit(string AgreementID, string Profit)
+    {
+        string constr = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
+
+        using (SqlConnection conn = new SqlConnection(constr))
+        {
+            string query = @"
+            INSERT INTO [tradeadmin].[profit] (AgreementID, profit)
+            VALUES (@AgreementID, @Profit)";
+
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@AgreementID", AgreementID);
+                cmd.Parameters.AddWithValue("@Profit", Profit);
+
+                conn.Open();
+                int rowsAffected = cmd.ExecuteNonQuery();
+                conn.Close();
+
+                if (rowsAffected > 0)
+                {
+                    return "Success";
+                }
+                else
+                {
+                    return "Error saving profit data.";
+                }
+            }
+        }
+    }
+
+
+
+
 }

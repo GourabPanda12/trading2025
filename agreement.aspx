@@ -250,6 +250,47 @@
                 });
 
 
+
+                $("#TransactionAmount, #profitclient, #DaysInvestment, #CurrentTransaction").on("input", function () {
+    // Get values from the inputs
+    const transactionAmount = parseFloat($("#TransactionAmount").val()) || 0;
+    const monthlyProfitPercentage = parseFloat($("#profitclient").val()) || 0; // Monthly percentage
+  
+    const daysInvestment = parseInt($("#DaysInvestment").val()) || 0;
+    const currentTransactionDate = $("#CurrentTransaction").val();
+
+    // Ensure valid date input
+    if (currentTransactionDate) {
+        const currentDate = new Date(currentTransactionDate);
+
+        // Get the year and month from the current transaction date
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth(); // 0-based month
+
+        // Calculate the total days in the current month
+        const daysInMonth = new Date(year, month + 1, 0).getDate(); // Last day of the month
+
+        // Calculate the daily profit rate
+        const dailyProfitRate = (transactionAmount * monthlyProfitPercentage) / (daysInMonth * 100);
+
+        let calculatedProfit;
+
+        if (daysInvestment >= daysInMonth) {
+            // If DaysInvestment equals or exceeds total days in the month, calculate full monthly profit
+            calculatedProfit = transactionAmount * (monthlyProfitPercentage / 100);
+        } else {
+            // Otherwise, calculate the proportional profit based on the daily rate
+            calculatedProfit = dailyProfitRate * daysInvestment;
+        }
+
+        // Display the calculated profit in the field
+        $("#calculatedProfit").val(calculatedProfit.toFixed(2)); // Round to 2 decimal places
+    }
+});
+
+
+
+
             $("#approvebtn").on("click", function () {
                 // Gather form data into a JSON object
                 var formData = {
@@ -279,22 +320,43 @@
                 // Log formData to confirm JSON structure
                 console.log(formData);
 
-                // AJAX request
+                // First AJAX request to save the main data
                 $.ajax({
                     type: "POST",
                     url: "agreement.aspx/abcd",
-                    data: JSON.stringify({ formData: formData }), // Convert JSON object to a string
+                    data: JSON.stringify({ formData: formData }),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
-                    success: function (response) {
-                        alert("You have Successfully Registered, Thank You");
-                        window.location.reload();
+                    success: function (response) {  
+                        alert("Main data successfully registered.");
+
+                        
+
+                        // Second AJAX request to save profit data
+                        $.ajax({
+                            type: "POST",
+                            url: "agreement.aspx/saveProfit", // Backend endpoint to save profit data
+                            data: JSON.stringify({
+                                AgreementID: $("#AgreementID").val(),
+                                Profit: calculatedProfit.toFixed(2) // Round to 2 decimal places
+                            }),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                alert("Profit successfully saved.");
+                                window.location.reload();
+                            },
+                            error: function (response) {
+                                alert("Error saving profit: " + response.responseText);
+                            }
+                        });
                     },
                     error: function (response) {
-                        alert("Error: " + response.responseText);
+                        alert("Error saving main data: " + response.responseText);
                     }
                 });
             });
+
 
             $("#btn1").click(function () {
                 const clientID = $("#ClientID").val();
@@ -316,8 +378,10 @@
                     alert("Invalid Client ID. It must be at least 5 characters long.");
                 }
             });
+
+
              
-$("#btn2").click(function () {
+        $("#btn2").click(function () {
     const clientID = $("#ClientID").val();  // Get the client ID from input field
   
     // First AJAX call to fetch AgreementID
@@ -346,8 +410,9 @@ $("#btn2").click(function () {
                             $("#StartDate").val(details.StartDate);  // Set Start Date
                             $("#Term").val(details.Term);            // Set Term
 
-                            var totalFund = parseFloat(details.TotalFund) || 0; // Ensure it's a number                         
-                            var transactionAmount = parseFloat($("#TransactionAmount").val()) || 0;// Ensure it's a number
+                            var totalFund = parseFloat(details.TotalFund) || 0; // Ensure it's a number
+                          // Ensure it's a number
+                            var transactionAmount = parseFloat($("#TransactionAmount").val()) || 0;
 
                             var combinedTotal = totalFund + transactionAmount;
                             $("#TotalFund").val(combinedTotal);
@@ -448,6 +513,7 @@ $("#btn2").click(function () {
 
 
 
+  
         });
 
     </script>
@@ -479,7 +545,7 @@ $("#btn2").click(function () {
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Transaction Amount:</label>
-                                    <input type="text" class="form-control" id="TransactionAmount" required>
+                                    <input type="Number" class="form-control" id="TransactionAmount" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Receipt By Client:</label>
@@ -568,11 +634,7 @@ $("#btn2").click(function () {
                                     </div>
 
 
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Profit to client:</label>
-                                        <div class="input-group mb-2 ">
-                                            <input type="number" class="form-control" id="profitclient" required>
-                                        </div>
+                                    
 
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">Current Transaction Start::</label>
@@ -582,6 +644,17 @@ $("#btn2").click(function () {
                                             <label class="form-label fw-bold">Days For Investment:</label>
                                             <input type="number" class="form-control" id="DaysInvestment" required>
                                         </div>
+
+                                    <div class="mb-3">
+    <label class="form-label fw-bold">Profit to client:</label>
+    <div class="input-group mb-2 ">
+        <input type="number" class="form-control" id="profitclient" required>
+    </div>
+
+                                         <div class="mb-3">
+     <label class="form-label fw-bold">calculatedProfit:</label>
+     <input type="number" class="form-control" id="calculatedProfit" required>
+ </div>
 
                                     </div>
                                     <div class="mb-3">
