@@ -345,7 +345,13 @@ $("#btn2").click(function () {
                             // Set the fetched values to the input fields
                             $("#StartDate").val(details.StartDate);  // Set Start Date
                             $("#Term").val(details.Term);            // Set Term
-                            $("#expireDate").val(details.ExpireDate); // Set Expire Date
+
+                            var totalFund = parseFloat(details.TotalFund) || 0; // Ensure it's a number
+                          // Ensure it's a number
+                            var transactionAmount = parseFloat($("#TransactionAmount").val()) || 0;
+
+                            var combinedTotal = totalFund + transactionAmount;
+                            $("#TotalFund").val(combinedTotal);
                         }
                     },
                     error: function (xhr, status, error) {
