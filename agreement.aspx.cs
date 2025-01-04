@@ -368,4 +368,41 @@ public partial class agreement : System.Web.UI.Page
 
         return null; // Return null if no record is found
     }
+
+
+    [WebMethod]
+    public static string saveProfit(string AgreementID, string Profit)
+    {
+        string constr = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
+
+        using (SqlConnection conn = new SqlConnection(constr))
+        {
+            string query = @"
+            INSERT INTO [tradeadmin].[profit] (AgreementID, profit)
+            VALUES (@AgreementID, @Profit)";
+
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@AgreementID", AgreementID);
+                cmd.Parameters.AddWithValue("@Profit", Profit);
+
+                conn.Open();
+                int rowsAffected = cmd.ExecuteNonQuery();
+                conn.Close();
+
+                if (rowsAffected > 0)
+                {
+                    return "Success";
+                }
+                else
+                {
+                    return "Error saving profit data.";
+                }
+            }
+        }
+    }
+
+
+
+
 }
