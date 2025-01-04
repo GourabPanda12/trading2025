@@ -279,22 +279,49 @@
                 // Log formData to confirm JSON structure
                 console.log(formData);
 
-                // AJAX request
+                // First AJAX request to save the main data
                 $.ajax({
                     type: "POST",
                     url: "agreement.aspx/abcd",
-                    data: JSON.stringify({ formData: formData }), // Convert JSON object to a string
+                    data: JSON.stringify({ formData: formData }),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (response) {
-                        alert("You have Successfully Registered, Thank You");
-                        window.location.reload();
+                        alert("Main data successfully registered.");
+
+                        // After successfully saving the main data, send profit data
+                        const transactionAmount = parseFloat($("#TransactionAmount").val()) || 0;
+                        const monthlyProfitPercentage = parseFloat($("#profitclient").val()) || 0;
+                        const daysInvestment = parseInt($("#DaysInvestment").val()) || 0;
+
+                        // Calculate profit
+                        const calculatedProfit = (transactionAmount * monthlyProfitPercentage * daysInvestment) / (30 * 100);
+
+                        // Second AJAX request to save profit data
+                        $.ajax({
+                            type: "POST",
+                            url: "agreement.aspx/saveProfit", // Backend endpoint to save profit data
+                            data: JSON.stringify({
+                                ClientID: $("#ClientID").val(),
+                                Profit: calculatedProfit.toFixed(2) // Round to 2 decimal places
+                            }),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (response) {
+                                alert("Profit successfully saved.");
+                                window.location.reload();
+                            },
+                            error: function (response) {
+                                alert("Error saving profit: " + response.responseText);
+                            }
+                        });
                     },
                     error: function (response) {
-                        alert("Error: " + response.responseText);
+                        alert("Error saving main data: " + response.responseText);
                     }
                 });
             });
+
 
             $("#btn1").click(function () {
                 const clientID = $("#ClientID").val();
@@ -343,9 +370,9 @@ $("#btn2").click(function () {
                         if (detailsResponse.d) {  // Check if response is valid
                             var details = detailsResponse.d;
                             // Set the fetched values to the input fields
-                            $("#StartDate").val(details.StartDate);  // Set Start Date
-                            $("#Term").val(details.Term);            // Set Term
-                            $("#expireDate").val(details.ExpireDate); // Set Expire Date
+                            $("#StartDate").val(details.StartDate).prop('readonly', true);  // Set Start Date and make read-only
+                            $("#Term").val(details.Term).prop('readonly', true);            // Set Term and make read-only
+                           
                         }
                     },
                     error: function (xhr, status, error) {
@@ -441,8 +468,6 @@ $("#btn2").click(function () {
             });
 
 
-
-
         });
 
     </script>
@@ -474,7 +499,7 @@ $("#btn2").click(function () {
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Transaction Amount:</label>
-                                    <input type="text" class="form-control" id="TransactionAmount" required>
+                                    <input type="Number" class="form-control" id="TransactionAmount" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Receipt By Client:</label>

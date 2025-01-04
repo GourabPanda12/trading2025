@@ -201,7 +201,7 @@
                         <td>${item.ReferBy}</td>
                         <td>${item.ActiveDocuments ? "Yes" : "No"}</td>
                      <td>
-                        <button class="btn btn-primary btn-sm">
+                        <button type="button" class="btn btn-primary btn-sm">
                             <a href="profile.aspx?ClientId=${item.ClientId}" style="color: #fff; text-decoration: none;">View</a>
                         </button>
                     </td>
