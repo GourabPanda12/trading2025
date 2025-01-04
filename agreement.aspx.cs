@@ -274,7 +274,7 @@ public partial class agreement : System.Web.UI.Page
     SELECT 
         [StartDate], 
         [Term], 
-       
+        [expireDate]
     FROM [tradedata].[tradeadmin].[aggrement]
     WHERE [AgreementID] = @AgreementID";
 
@@ -283,7 +283,7 @@ public partial class agreement : System.Web.UI.Page
         {
             StartDate = string.Empty,
             Term = string.Empty,
-            
+            ExpireDate = string.Empty
         };
 
         // Using SQL connection and command
@@ -312,7 +312,9 @@ public partial class agreement : System.Web.UI.Page
                                     ? reader["Term"].ToString()
                                     : string.Empty;
 
-                               
+                                agreementDetails.ExpireDate = reader["ExpireDate"] != DBNull.Value
+                                    ? Convert.ToDateTime(reader["ExpireDate"]).ToString("yyyy-MM-dd")
+                                    : string.Empty;
                             }
                         }
                         else
@@ -337,7 +339,7 @@ public partial class agreement : System.Web.UI.Page
     {
         public string StartDate { get; set; }
         public string Term { get; set; }
-      
+        public string ExpireDate { get; set; }
     }
 
 

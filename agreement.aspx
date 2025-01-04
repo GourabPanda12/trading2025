@@ -370,9 +370,9 @@ $("#btn2").click(function () {
                         if (detailsResponse.d) {  // Check if response is valid
                             var details = detailsResponse.d;
                             // Set the fetched values to the input fields
-                            $("#StartDate").val(details.StartDate).prop('readonly', true);  // Set Start Date and make read-only
-                            $("#Term").val(details.Term).prop('readonly', true);            // Set Term and make read-only
-                           
+                            $("#StartDate").val(details.StartDate);  // Set Start Date
+                            $("#Term").val(details.Term);            // Set Term
+                            $("#expireDate").val(details.ExpireDate); // Set Expire Date
                         }
                     },
                     error: function (xhr, status, error) {
