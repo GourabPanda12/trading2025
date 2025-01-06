@@ -118,6 +118,7 @@ public partial class agreement : System.Web.UI.Page
         public string Pic { get; set; }
         public string Path { get; set; }
         public string IFSC { get; set; }
+        public string calculatedProfit { get; set; }
     }
 
     [WebMethod]
@@ -149,11 +150,11 @@ public partial class agreement : System.Web.UI.Page
             INSERT INTO [tradedata].[tradeadmin].[aggrement] 
             (ClientName, ClientID, TransactionAmount, ClientReceipt, PaymentReceipt, AgreementID, 
              AgreementDocument, Refer, Percentage, Priority, TotalFund, StartDate, Term, 
-             ExpireDate, ProfitClient, AccountLink, CurrentTransaction, DaysInvestment, ClientReceiptpath, IFSC)
+             ExpireDate, ProfitClient, AccountLink, CurrentTransaction, DaysInvestment, ClientReceiptpath, IFSC,profit)
             VALUES 
             (@ClientName, @ClientID, @TransactionAmount, @ClientReceipt, @PaymentReceipt, @AgreementID, 
              @AgreementDocument, @Refer, @Percentage, @Priority, @TotalFund, @StartDate, @Term, 
-             @ExpireDate, @ProfitClient, @AccountLink, @CurrentTransaction, @DaysInvestment, @ClientReceiptpath, @IFSC)";
+             @ExpireDate, @ProfitClient, @AccountLink, @CurrentTransaction, @DaysInvestment, @ClientReceiptpath, @IFSC,@profit)";
 
                 using (SqlCommand cmd = new SqlCommand(insertQuery, con))
                 {
@@ -177,6 +178,7 @@ public partial class agreement : System.Web.UI.Page
                     cmd.Parameters.AddWithValue("@DaysInvestment", formData.DaysInvestment);
                     cmd.Parameters.AddWithValue("@ClientReceiptpath", picFilePath ?? string.Empty);
                     cmd.Parameters.AddWithValue("@IFSC", formData.IFSC ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@profit", formData.calculatedProfit ?? string.Empty);
 
                     con.Open();
                     cmd.ExecuteNonQuery();
@@ -274,7 +276,8 @@ public partial class agreement : System.Web.UI.Page
     SELECT 
         [StartDate], 
         [Term], 
-        [expireDate]
+        [expireDate],
+[TotalFund]
     FROM [tradedata].[tradeadmin].[aggrement]
     WHERE [AgreementID] = @AgreementID";
 
@@ -283,7 +286,8 @@ public partial class agreement : System.Web.UI.Page
         {
             StartDate = string.Empty,
             Term = string.Empty,
-            ExpireDate = string.Empty
+            ExpireDate = string.Empty,
+            TotalFund = string.Empty
         };
 
         // Using SQL connection and command
@@ -315,6 +319,10 @@ public partial class agreement : System.Web.UI.Page
                                 agreementDetails.ExpireDate = reader["ExpireDate"] != DBNull.Value
                                     ? Convert.ToDateTime(reader["ExpireDate"]).ToString("yyyy-MM-dd")
                                     : string.Empty;
+
+                                agreementDetails.TotalFund = reader["TotalFund"] != DBNull.Value
+                                   ? reader["TotalFund"].ToString()
+                                   : string.Empty;
                             }
                         }
                         else
@@ -340,7 +348,8 @@ public partial class agreement : System.Web.UI.Page
         public string StartDate { get; set; }
         public string Term { get; set; }
         public string ExpireDate { get; set; }
-    }
+        public string TotalFund { get; set; }
+}
 
 
     [WebMethod]
@@ -368,41 +377,6 @@ public partial class agreement : System.Web.UI.Page
 
         return null; // Return null if no record is found
     }
-
-
-    [WebMethod]
-    public static string saveProfit(string AgreementID, string Profit)
-    {
-        string constr = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
-
-        using (SqlConnection conn = new SqlConnection(constr))
-        {
-            string query = @"
-            INSERT INTO [tradeadmin].[profit] (AgreementID, profit)
-            VALUES (@AgreementID, @Profit)";
-
-            using (SqlCommand cmd = new SqlCommand(query, conn))
-            {
-                cmd.Parameters.AddWithValue("@AgreementID", AgreementID);
-                cmd.Parameters.AddWithValue("@Profit", Profit);
-
-                conn.Open();
-                int rowsAffected = cmd.ExecuteNonQuery();
-                conn.Close();
-
-                if (rowsAffected > 0)
-                {
-                    return "Success";
-                }
-                else
-                {
-                    return "Error saving profit data.";
-                }
-            }
-        }
-    }
-
-
 
 
 }

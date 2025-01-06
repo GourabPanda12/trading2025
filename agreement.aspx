@@ -314,7 +314,8 @@
                     DaysInvestment: $("#DaysInvestment").val(),
                     pic: $("#hiden").val(),
                     path: $("#hidden").val(),
-                    ifsc: $("#IFSC").val()
+                    ifsc: $("#IFSC").val(),
+                    calculatedProfit: $("#calculatedProfit").val()
                 };
 
                 // Log formData to confirm JSON structure
@@ -329,27 +330,7 @@
                     dataType: "json",
                     success: function (response) {  
                         alert("Main data successfully registered.");
-
-                        
-
-                        // Second AJAX request to save profit data
-                        $.ajax({
-                            type: "POST",
-                            url: "agreement.aspx/saveProfit", // Backend endpoint to save profit data
-                            data: JSON.stringify({
-                                AgreementID: $("#AgreementID").val(),
-                                Profit: calculatedProfit.toFixed(2) // Round to 2 decimal places
-                            }),
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
-                            success: function (response) {
-                                alert("Profit successfully saved.");
-                                window.location.reload();
-                            },
-                            error: function (response) {
-                                alert("Error saving profit: " + response.responseText);
-                            }
-                        });
+                        window.location.reload();
                     },
                     error: function (response) {
                         alert("Error saving main data: " + response.responseText);
@@ -408,7 +389,8 @@
                             var details = detailsResponse.d;
                             // Set the fetched values to the input fields
                             $("#StartDate").val(details.StartDate);  // Set Start Date
-                            $("#Term").val(details.Term);            // Set Term
+                            $("#Term").val(details.Term);  // Set Term
+                            $("#expireDate").val(details.ExpireDate);
 
                             var totalFund = parseFloat(details.TotalFund) || 0; // Ensure it's a number
                           // Ensure it's a number
@@ -616,7 +598,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Total Fund::</label>
-                                    <input type="text" class="form-control" id="TotalFund" placeholder="Auto Generate">
+                                    <input type="text" class="form-control" id="TotalFund" value="0" readonly>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Start Date::</label>
@@ -651,10 +633,11 @@
         <input type="number" class="form-control" id="profitclient" required>
     </div>
 
-                                         <div class="mb-3">
-     <label class="form-label fw-bold">calculatedProfit:</label>
-     <input type="number" class="form-control" id="calculatedProfit" required>
- </div>
+                                       <div class="mb-3 d-flex align-items-center">
+    <span class="fw-bold me-2">calculatedProfit:</span>
+    <input type="number" class="form-control w-auto" id="calculatedProfit" required>
+</div>
+
 
                                     </div>
                                     <div class="mb-3">

@@ -96,7 +96,8 @@
                                      <td>${agreement.Priority}</td>
                                       <td>${agreement.Status}</td>
                                       <td>${agreement.NoOfPayments}</td>
-                                     <td><button class="btn btn-primary btn-sm">Action</button></td>
+<td><button type="button" class="btn btn-primary btn-sm action-button" onclick="window.location.href='agreementDetails.aspx?AgreementID=${agreement.AgreementID}'">Action</button></td>
+
 
                             </tr>`
                         });

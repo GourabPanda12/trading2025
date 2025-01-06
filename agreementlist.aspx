@@ -229,6 +229,7 @@ table a {
 
 
         <script>
+
             $(document).ready(function () {
                 var table = $('#data-table').DataTable({
                     pageLength: 20,
@@ -240,6 +241,9 @@ table a {
                     const filterValue = $(this).val();
                     table.column(6).search(filterValue).draw();
                 });
+
+
+
                 $.ajax({
                     type: "POST",
                     url: "agreementlist.aspx/GetAgreementData",
@@ -271,6 +275,7 @@ table a {
                     }
                 });
             });
+
 
         </script>
 

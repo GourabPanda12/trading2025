@@ -38,7 +38,7 @@ public partial class agreementlist : System.Web.UI.Page
         public decimal ProfitClient { get; set; }
     }
     [WebMethod]
-    public List<AgreementData> GetAgreementData()
+    public static List<AgreementData> GetAgreementData()
     {
         List<AgreementData> agreementDataList = new List<AgreementData>();
 
