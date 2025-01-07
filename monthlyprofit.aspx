@@ -7,177 +7,462 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monthly Profits</title>
-        <ucx:MyUserControl1 runat="server" />
-
+    <title>Monthly Profits Table</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* General Styles */
-body {
-    background-color: #f4f4f4;
+        / Previous styles remain the same until expand-btn /
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e8f1f5;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .dashboard-header {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 50%;
+}
+.dashboard-header h2{
+  margin: 0 0 20px 0;
 }
 
-.container {
-    max-width: 1200px;
-}
+        .stats-container {
+            display: flex;
+            gap: 20px;
+        }
 
-/* Header Section */
-.header .search-bar {
-    border-radius: 20px;
-}
+        .stat-card {
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            flex: 1;
+        }
 
-.header .page-info {
-    font-size: 18px;
-}
+        .stat-card.total {
+            background-color: #0a2647;
+        }
 
-.header .profile-icon {
-    width: 40px;
-    height: 40px;
-}
+        .stat-card.client {
+            background-color: #b22222;
+        }
 
-/* Monthly Profits Section */
-.monthly-profits .profit-card {
-    border-radius: 10px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-}
+        .stat-card.team {
+            background-color: #228b22;
+        }
 
-/* Table Section */
-.data-table th, 
-.data-table td {
-    text-align: center;
-    vertical-align: middle;
-}
+        .stat-amount {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
 
-.data-table th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-}
+        .stat-label {
+            font-size: 14px;
+        }
 
-/* Footer Section */
-.footer {
+        .search-container {
+            text-align: right;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .search-input {
+            padding: 8px 32px 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 200px;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #0a2647;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .expand-btn {
+    background: none;
+    color: #0a2647;
+    cursor: pointer;
     font-size: 14px;
+    padding: 5px;
+    border: 1px solid #bfbfbf;
+    background-color: #d8e7ff;
 }
 
-.footer .pagination .page-link {
-    color: #007bff;
-}
+        .expandable-row {
+            display: none;
+            background-color: #f0f6ff;
+        }
 
-.footer .pagination .page-link:hover {
-    background-color: #007bff;
-    color: white;
-}
-#header{
-    margin-top: 100px;
-    margin-left: 550px;
-}
+        .expandable-content {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 15px 20px;
+        }
 
+        .installment-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-amount {
+            text-align: left;
+        }
+
+        .installment-date {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .installment-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .upload-file-btn {
+            padding: 6px 12px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 4px;
+            color: #333;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+            min-width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .status-paid {
+            background-color: #006400;
+        }
+
+        .status-pending {
+            background-color: #cc0000;
+        }
+
+        .profile-btn {
+            background-color: #1a4157;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .pagination-info {
+            color: #666;
+        }
+
+        .pagination-controls button {
+            padding: 8px 12px;
+            margin: 0 4px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .pagination-controls button:hover {
+            background-color: #f0f0f0;
+        }
     </style>
-
 </head>
 <body>
-    <div class="container mt-4">
-             <ucx1:MyUserControl11 runat="server" />
-
-       
-
-        <!-- Monthly Profits Section -->
-        <div id="profitbox">
-             <div class="row text-center mb-4 monthly-profits">
-     <div class="col-md-4">
-         <div class="card bg-primary text-white p-3 profit-card">
-             <h5>500000.00</h5>
-             <p class="mb-0">Total Funds</p>
-         </div>
-     </div>
-     <div class="col-md-4">
-         <div class="card bg-danger text-white p-3 profit-card">
-             <h5>500,000.00</h5>
-             <p class="mb-0">Client Payments</p>
-         </div>
-     </div>
-     <div class="col-md-4">
-         <div class="card bg-success text-white p-3 profit-card">
-             <h5>250,000.00</h5>
-             <p class="mb-0">Team Payments</p>
-         </div>
-     </div>
- </div>
-        </div>
-       
-
-        <!-- Table Section -->
-        <div class="card">
-            <div class="card-body">
-                <table class="table table-bordered table-hover data-table">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Sl No</th>
-                            <th>Agreement ID</th>
-                            <th>Client Name</th>
-                            <th>Funds</th>
-                            <th>Term</th>
-                            <th>Priority</th>
-                            <th>Start Date</th>
-                            <th>Expire Date</th>
-                            <th>Bank Account / UPI</th>
-                            <th>Refer By</th>
-                            <th>Payments</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>AG8317001</td>
-                            <td>ABC RJ</td>
-                            <td>200,000.00</td>
-                            <td>3</td>
-                            <td>P2</td>
-                            <td>02-10-2024</td>
-                            <td>03-01-2025</td>
-                            <td>738200010075419<br>PNB</td>
-                            <td>Danish</td>
-                            <td><button class="btn btn-primary btn-sm">→</button></td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>AG2589047</td>
-                            <td>MGI POD</td>
-                            <td>700,000.00</td>
-                            <td>6</td>
-                            <td>P2</td>
-                            <td>01-12-2024</td>
-                            <td>02-03-2025</td>
-                            <td>909054644869/ybl</td>
-                            <td>Danish</td>
-                            <td><button class="btn btn-primary btn-sm">→</button></td>
-                        </tr>
-                        <!-- Add more rows as needed -->
-                    </tbody>
-                </table>
+    <div class="dashboard-header">
+        <h2>Monthly Profits</h2>
+        <div class="stats-container">
+            <div class="stat-card total">
+                <div class="stat-amount">500000.00</div>
+                <div class="stat-label">Total Funds</div>
             </div>
-        </div>
-
-        <!-- Footer Section -->
-        <div class="footer d-flex justify-content-between align-items-center mt-4">
-            <p class="mb-0">Showing 1 to 10 of 130 entries</p>
-            <nav>
-                <ul class="pagination pagination-sm mb-0">
-                    <li class="page-item"><a class="page-link" href="#">&lt;</a></li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">&gt;</a></li>
-                </ul>
-            </nav>
+            <div class="stat-card client">
+                <div class="stat-amount">500,000.00</div>
+                <div class="stat-label">Client Payments</div>
+            </div>
+            <div class="stat-card team">
+                <div class="stat-amount">250000.00</div>
+                <div class="stat-label">Team Payments</div>
+            </div>
         </div>
     </div>
 
-  
-</body>
-</html>
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="Search....">
+        <i class="fas fa-search search-icon"></i>
+    </div>
 
-</html>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Sl No</th>
+                    <th>Agreement ID</th>
+                    <th>Client Name</th>
+                    <th>Funds</th>
+                    <th>Term</th>
+                    <th>Priority</th>
+                    <th>Start Date</th>
+                    <th>Expire Date</th>
+                    <th>Bank Account / UPI</th>
+                    <th>Refer By</th>
+                    <th>Payments</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>AG6317001</td>
+                    <td>ABC RKJ</td>
+                    <td>200,000.00</td>
+                    <td>3</td>
+                    <td>P2</td>
+                    <td>02-10-2024</td>
+                    <td>03-01-2025</td>
+                    <td>7382000100075419</td>
+                    <td>PNB</td>
+                    <td>Danish</td>
+                    <td><button class="expand-btn"><i class="fas fa-chevron-down"></i></button></td>
+                </tr>
+                <tr class="expandable-row">
+                    <td colspan="12">
+                        <div class="expandable-content">
+                            <div class="installment-box">
+                                <div class="date-amount">
+                                    <div class="installment-date">3<sup>rd</sup> Jan 2025</div>
+                                    <div class="installment-amount">9,032.26</div>
+                                </div>
+                                <button class="upload-file-btn">
+                                    <i class="fas fa-upload"></i> Upload File
+                                </button>
+                                <button class="status-btn status-paid">
+                                    <i class="fas fa-check"></i> Paid
+                                </button>
+                            </div>
+                            <div class="installment-box">
+                                <div class="date-amount">
+                                    <div class="installment-date">3<sup>rd</sup> Feb 2025</div>
+                                    <div class="installment-amount">12,000.00</div>
+                                </div>
+                                <button class="upload-file-btn">
+                                    <i class="fas fa-upload"></i> Upload File
+                                </button>
+                                <button class="status-btn status-pending">
+                                    <i class="fas fa-clock"></i> Pending
+                                </button>
+                            </div>
+                            <div class="installment-box">
+                                <div class="date-amount">
+                                    <div class="installment-date">3<sup>rd</sup> Mar 2025</div>
+                                    <div class="installment-amount">12,000.00</div>
+                                </div>
+                                <button class="upload-file-btn">
+                                    <i class="fas fa-upload"></i> Upload File
+                                </button>
+                                <button class="status-btn status-pending">
+                                    <i class="fas fa-clock"></i> Pending
+                                </button>
+                            </div>
+                            <div>
+                                <button class="profile-btn">
+                                    <i class="fas fa-user"></i> Go To Profile
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>AG2589047</td>
+                    <td>MGJ POD</td>
+                    <td>700,000.00</td>
+                    <td>6</td>
+                    <td>P2</td>
+                    <td>01-12-2024</td>
+                    <td>02-03-2025</td>
+                    <td>9090546446@ybl</td>
+                    <td></td>
+                    <td>Danish</td>
+                    <td><button class="expand-btn"><i class="fas fa-chevron-down"></i></button></td>
+                </tr>
+                <tr class="expandable-row">
+                  <td colspan="12">
+                      <div class="expandable-content">
+                          <div class="installment-box">
+                              <div class="date-amount">
+                                  <div class="installment-date">4<sup>rd</sup> Jan 2024</div>
+                                  <div class="installment-amount">5,232.26</div>
+                              </div>
+                              <button class="upload-file-btn">
+                                  <i class="fas fa-upload"></i> Upload File
+                              </button>
+                              <button class="status-btn status-paid">
+                                  <i class="fas fa-check"></i> Paid
+                              </button>
+                          </div>
+                          <div class="installment-box">
+                              <div class="date-amount">
+                                  <div class="installment-date">7<sup>th</sup> Feb 2023</div>
+                                  <div class="installment-amount">14,000.00</div>
+                              </div>
+                              <button class="upload-file-btn">
+                                  <i class="fas fa-upload"></i> Upload File
+                              </button>
+                              <button class="status-btn status-pending">
+                                  <i class="fas fa-clock"></i> Pending
+                              </button>
+                          </div>
+                          <div class="installment-box">
+                              <div class="date-amount">
+                                  <div class="installment-date">3<sup>rd</sup> Mar 2025</div>
+                                  <div class="installment-amount">12,000.00</div>
+                              </div>
+                              <button class="upload-file-btn">
+                                  <i class="fas fa-upload"></i> Upload File
+                              </button>
+                              <button class="status-btn status-pending">
+                                  <i class="fas fa-clock"></i> Pending
+                              </button>
+                          </div>
+                          <div>
+                              <button class="profile-btn">
+                                  <i class="fas fa-user"></i> Go To Profile
+                              </button>
+                          </div>
+                      </div>
+                  </td>
+              </tr>
+            </tbody>
+        </table>
+    </div>
 
+    <div class="pagination">
+        <div class="pagination-info">
+            Showing 1 to 10 of 130 entries
+        </div>
+        <div class="pagination-controls">
+            <button>1</button>
+            <button>2</button>
+            <button><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // Expand/Collapse functionality
+        document.querySelectorAll('.expand-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const expandableRow = button.closest('tr').nextElementSibling;
+                const isExpanded = expandableRow.style.display === 'table-row';
+                const icon = button.querySelector('i');
+                
+                // Close all other expanded rows
+                document.querySelectorAll('.expandable-row').forEach(row => {
+                    row.style.display = 'none';
+                    row.previousElementSibling.querySelector('.expand-btn i').className = 'fas fa-chevron-down';
+                });
+
+                // Toggle current row
+                expandableRow.style.display = isExpanded ? 'none' : 'table-row';
+                icon.className = isExpanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.querySelector('.search-input');
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr:not(.expandable-row)');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+                
+                // Hide expanded content when filtering
+                const expandedRow = row.nextElementSibling;
+                if (expandedRow && expandedRow.classList.contains('expandable-row')) {
+                    expandedRow.style.display = 'none';
+                    row.querySelector('.expand-btn i').className = 'fas fa-chevron-down';
+                }
+            });
+        });
+
+        // File upload simulation
+        document.querySelectorAll('.upload-file-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.click();
+                
+                input.addEventListener('change', () => {
+                    if (input.files.length > 0) {
+                        button.innerHTML = `<i class="fas fa-file"></i> ${input.files[0].name}`;
+                    }
+                });
+            });
+        });
+    </script>
 </body>
-</html>
-    <script src="script.js"></script>
-</body>
-</html>
+</html>       
