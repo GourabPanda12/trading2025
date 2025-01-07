@@ -200,13 +200,20 @@
                               response.d.forEach((agreement, index) => {
                                   console.log(`Processing agreement ${index + 1}:`, agreement);  // Log each agreement object
 
-                                  let transactionDate = new Date(agreement.StartDate);
+                                  let transactionDate = agreement.CurrentTransaction;
+                                  let investmentStartDate = agreement.StartDate;
                                   let currentDate = new Date();
-                                  let daysInCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-                                  let daysInvested = agreement.DaysInvestment ? agreement.DaysInvestment : 'N/A';
 
-                                  let monthlyProfit = agreement.Profit;
-                                  let dailyProfit = monthlyProfit / daysInCurrentMonth;
+                                  // Calculate Days in Current Month
+                                  let daysInCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+
+                                  // Calculate Days Invested
+                                  let daysInvested = agreement.DaysInvestment || "N/A";
+
+                                  // Calculate Profits
+                                  let firstMonthTotalProfit = parseFloat(agreement.Profit) || 0;
+                                  let dailyProfit = parseFloat(firstMonthTotalProfit / daysInvested);
+                                  let monthlyProfit = parseFloat(dailyProfit * daysInCurrentMonth);
 
                                   // Log calculated values
                                
@@ -218,12 +225,12 @@
                             <td>${daysInCurrentMonth}</td>
                             <td>${agreement.TransactionAmount || "N/A"}</td>
                             <td><a href="${agreement.ClientReceipt || "#"}" target="_blank">View</a></td>
-                            <td><a href="${agreement.ClientReceiptpath || "#"}" target="_blank">View</a></td>
+                            <td><a href="${agreement.ClientReceiptPath || "#"}" target="_blank">View</a></td>
                             <td>${agreement.StartDate}</td>
                             <td>${daysInvested}</td>
-                            <td>${monthlyProfit || "N/A"}</td>
+                            <td>${monthlyProfit.toFixed(0) || "N/A"}</td>
                             <td>${dailyProfit.toFixed(2) || "N/A"}</td>
-                            <td>${(monthlyProfit * 1).toFixed(2) || "N/A"}</td>
+                            <td>${firstMonthTotalProfit || "N/A"}</td>
                         </tr>
                     `;
                               });
