@@ -7,6 +7,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <ucx:MyUserControl1 runat="server" />
+
     <title>Monthly Profits Table</title>
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -228,10 +230,71 @@
         .pagination-controls button:hover {
             background-color: #f0f0f0;
         }
+        #dheader{
+            margin-left:100px;
+        }
     </style>
+
+    <script>
+        $(document).ready(function () {
+            // Fetch data from the server
+            function fetchData(query = "") {
+                $.ajax({
+                    url: 'Adminapprove.aspx/GetTableData',
+                    method: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify({ search: query }),
+                    dataType: 'json',
+                    success: function (response) {
+                        const data = JSON.parse(response.d);
+                        let html = "";
+
+                        if (data.length > 0) {
+                            data.forEach((row, index) => {
+                                html += `
+                                    <tr>
+                                        <td>${index + 1}</td>
+                                        <td>${row.AgreementID}</td>
+                                        <td>${row.ClientName}</td>
+                                        <td>${row.Funds}</td>
+                                        <td>${row.Term}</td>
+                                        <td>${row.Priority}</td>
+                                        <td>${row.StartDate}</td>
+                                        <td>${row.ExpireDate}</td>
+                                        <td>${row.BankAccount}</td>
+                                        <td>${row.ReferBy}</td>
+                                        <td>${row.Payments}</td>
+                                        <td><button class="expand-btn"><i class="fas fa-chevron-down"></i></button></td>
+                                    </tr>
+                                    <tr class="expandable-row">
+                                        <td colspan="12">
+                                            <div class="expandable-content">
+                                                <!-- Additional expandable row content here -->
+                                            </div>
+                                        </td>
+                                    </tr>`;
+                            });
+                        } else {
+                            html = '<tr><td colspan="12">No data available</td></tr>';
+                        }
+
+                        $('#data-table').html(html);
+                    },
+                    error: function (error) {
+                        console.error('Error fetching data:', error);
+                    }
+                });
+    </script>
+
+
+
+
+
 </head>
 <body>
-    <div class="dashboard-header">
+ <ucx1:MyUserControl11 runat="server" />
+
+    <div class="dashboard-header" id="dheader">
         <h2>Monthly Profits</h2>
         <div class="stats-container">
             <div class="stat-card total">
