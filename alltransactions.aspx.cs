@@ -62,12 +62,19 @@ WHERE
                         {
                             int uploadId = reader.IsDBNull(6) ? 0 : reader.GetInt32(6); // Retrieve `uploadId`
 
-                            // Set the cookie
-                            HttpCookie uploadIdCookie = new HttpCookie("uploadId", uploadId.ToString())
+                            // Check if the cookie already exists
+                            if (HttpContext.Current.Request.Cookies["uploadId"] == null)
                             {
-                                Expires = DateTime.Now.AddHours(1) // Set expiration time for the cookie (1 hour)
-                            };
-                            HttpContext.Current.Response.Cookies.Add(uploadIdCookie); // Add cookie to the response
+                                // Set the cookie only once for the first `uploadId` found
+                                HttpCookie uploadIdCookie = new HttpCookie("uploadId", uploadId.ToString())
+                                {
+                                    Expires = DateTime.Now.AddHours(1), // Set expiration time for the cookie (1 hour)
+                                    Path = "/", // Make the cookie accessible across the entire domain
+                                    Secure = true, // Ensure cookie is sent over HTTPS (optional)
+                                    SameSite = SameSiteMode.None // Allow cross-site cookies (optional)
+                                };
+                                HttpContext.Current.Response.Cookies.Add(uploadIdCookie); // Add cookie to the response
+                            }
 
                             client.Add(new ClientTransactionDTO
                             {
