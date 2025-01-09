@@ -41,14 +41,15 @@ public partial class alltransactions : System.Web.UI.Page
                     u.Amount, 
                     u.CreatedDate, 
                     u.ClientId,
-                    u.MyDocPath
+                    u.MyDocPath,
+                    u.status
     
                 FROM 
                     registrations r 
                 RIGHT OUTER JOIN 
                     upload u 
                 ON 
-                    u.ClientId = r.ClientId";
+                    u.ClientId = r.ClientId where u.status='pending'";
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
