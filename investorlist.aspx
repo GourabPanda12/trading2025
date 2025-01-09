@@ -1,4 +1,5 @@
 <%@ Page Language="C#" AutoEventWireup="true" CodeFile="investorlist.aspx.cs" Inherits="investorlist" %>
+
 <%@ Register TagPrefix="ucx1" TagName="MyUserControl11" Src="~/sidenav2.ascx" %>
 <%@ Register TagPrefix="ucx" TagName="MyUserControl1" Src="~/header.ascx" %>
 
@@ -7,9 +8,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>Investor lists</title>
-        <ucx:MyUserControl1 runat="server" />
+    <ucx:MyUserControl1 runat="server" />
 
-  
+
 
     <style>
         body {
@@ -19,23 +20,24 @@
             background-color: #f4f8fc;
         }
 
-.investors-list-container {
-    padding: 10px;
-    max-width: 1200px;
-    margin: 0 auto;
-    background-color: #d1e4ff;
-    border-radius: 8px;
-    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 85px;
-    margin-left: 111px;
-}
-.investors-list-container h2{
-    display: flex;
-    font-size: 25px;
-    font-weight: 600;
-    padding: 12px 5px;
+        .investors-list-container {
+            padding: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #d1e4ff;
+            border-radius: 8px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 85px;
+            margin-left: 111px;
+        }
 
-}
+            .investors-list-container h2 {
+                display: flex;
+                font-size: 25px;
+                font-weight: 600;
+                padding: 12px 5px;
+            }
+
         h2 {
             font-size: 1.8em;
             color: #333;
@@ -43,36 +45,36 @@
             text-align: center;
         }
 
-.summary-cards {
-    display: flex
-;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 20px;
-    width: 48%;
-    background-color: #ffffff;
-    padding: 10px;
-    border-radius: 10px;
-}
-.summary-cards p {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    color: #fff;
-}
-.summary-cards h3 {
+        .summary-cards {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            width: 48%;
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+        }
 
-    color: #fff;
-}
+            .summary-cards p {
+                margin-top: 0;
+                margin-bottom: 1rem;
+                color: #fff;
+            }
 
-.card {
-    flex: 1;
-    padding: 8px;
-    text-align: center;
-    border-radius: 8px;
-    color: white;
-    font-weight: 500;
-    font-size: 18px;
-}
+            .summary-cards h3 {
+                color: #fff;
+            }
+
+        .card {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            font-size: 18px;
+        }
 
         .total-investors {
             background-color: #087a9f !important;
@@ -117,19 +119,19 @@
             overflow: hidden;
         }
 
-        .investors-table th,
-        .investors-table td {
-            padding: 12px;
-            text-align: center;
-            border: 1px solid #ddd;
-            font-size: 0.9em;
-        }
+            .investors-table th,
+            .investors-table td {
+                padding: 12px;
+                text-align: center;
+                border: 1px solid #ddd;
+                font-size: 0.9em;
+            }
 
-        .investors-table th {
-            background-color: #087a9f;
-            color: white;
-            font-weight: bold;
-        }
+            .investors-table th {
+                background-color: #087a9f;
+                color: white;
+                font-weight: bold;
+            }
 
         .status {
             display: inline-block;
@@ -139,13 +141,13 @@
             color: white;
         }
 
-        .status.active {
-            background-color: #28a745;
-        }
+            .status.active {
+                background-color: #28a745;
+            }
 
-        .status.inactive {
-            background-color: #6c757d;
-        }
+            .status.inactive {
+                background-color: #6c757d;
+            }
 
         .profile-link {
             color: #087a9f;
@@ -153,73 +155,95 @@
             font-weight: bold;
         }
 
-        .profile-link:hover {
-            text-decoration: underline;
+            .profile-link:hover {
+                text-decoration: underline;
+            }
+        /* Add vertical scrollbar */
+        .investors-table-container {
+            max-height: 400px; /* Adjust height as needed */
+            overflow-y: auto; /* Enable vertical scrolling */
         }
+
+        .investors-table {
+            width: 100%; /* Ensure the table spans full width */
+            border-collapse: collapse;
+        }
+
+            .investors-table th,
+            .investors-table td {
+                padding: 12px;
+                text-align: center;
+                border: 1px solid #ddd; /* Optional: For table borders */
+            }
+
+            .investors-table th {
+                background-color: #087a9f;
+                color: white;
+            }
     </style>
 
-  
-     <script>
-         $(document).ready(function () {
-             var table = $('#datatable').DataTable({
-                 pageLength: 5,
-                 responsive: true,
-                 dom: 'Bfrtip'
-             });
 
-             $('#status-filter').on('change', function () {
-                 const filterValue = $(this).val();
-                 table.column(6).search(filterValue).draw();
-             });
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable with server-side processing disabled
+            var table = $('#datatable').DataTable({
+                pageLength: 5,
+                responsive: true,
+                dom: 'Bfrtip', // Controls buttons, filters, etc.
+            });
 
-             $('.register-btn').on('click', function () {
-         
-                 window.location.href = 'Transaction.aspx';
-             });
+            // Handle status filter dropdown
+            $('#status-filter').on('change', function () {
+                const filterValue = $(this).val();
+                table.column(6).search(filterValue).draw(); // Apply search to the "Status" column
+            });
 
-             $.ajax({
-                 type: "POST",
-                 url: "investorlist.aspx/GetClientData",
-                 contentType: "application/json; charset=utf-8",
-                 dataType: "json",
-                 success: function (response) {
-                     var data = response.d.data;
-                     var table = $("#datatable tbody");
-                     table.empty(); // Clear any existing rows
+            // Redirect to register investor page
+            $('.register-btn').on('click', function () {
+                window.location.href = 'Transaction.aspx';
+            });
 
-                     $.each(data, function (index, item) {
-                         table.append(`
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${item.ClientId}</td>
-                        <td>${item.ClientName}</td>
-                        <td>${item.ActiveFunds || "-"}</td>
-                        <td>${item.JoiningDate}</td>
-                        <td>${item.Mobile}</td>
-                        <td>${item.Status}</td>
-                        <td>${item.Place}</td>
-                        <td>${item.ReferBy}</td>
-                        <td>${item.ActiveDocuments ? "Yes" : "No"}</td>
-                     <td>
-                        <button type="button" class="btn btn-primary btn-sm">
-                            <a href="profile.aspx?ClientId=${item.ClientId}" style="color: #fff; text-decoration: none;">View</a>
-                        </button>
-                    </td>
-                    
-                    </tr>
-                `);
-                     });
-                 },
-                 error: function (err) {
-                     console.error("Error fetching data:", err);
-                 }
-             });
+            // Fetch and populate data dynamically via AJAX
+            $.ajax({
+                type: "POST",
+                url: "investorlist.aspx/GetClientData",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    var data = response.d.data;
 
+                    // Clear existing rows in DataTable
+                    table.clear();
 
+                    // Add rows dynamically to DataTable using its API
+                    $.each(data, function (index, item) {
+                        table.row.add([
+                            index + 1,
+                            item.ClientId,
+                            item.ClientName,
+                            item.ActiveFunds || "-",
+                            item.JoiningDate,
+                            item.Mobile,
+                            item.Status,
+                            item.Place,
+                            item.ReferBy,
+                            item.ActiveDocuments ? "Yes" : "No",
+                            `<button type="button" class="btn btn-primary btn-sm">
+                        <a href="profile.aspx?ClientId=${item.ClientId}" style="color: #fff; text-decoration: none;">View</a>
+                    </button>`
+                        ]);
+                    });
 
+                    // Redraw DataTable to update the UI
+                    table.draw();
+                },
+                error: function (err) {
+                    console.error("Error fetching data:", err);
+                }
+            });
+        });
 
-         });
-     </script>
+    </script>
 
 
 </head>
@@ -248,32 +272,34 @@
                     </select>
                     <button type="button" class="register-btn">Register Investor</button>
                 </div>
-<table id="datatable" class="investors-table display responsive nowrap">
-    <thead>
-        <tr>
-            <th>Sl No</th>
-            <th>Client ID</th>
-            <th>Client Name</th>
-            <th>Active Funds</th>
-            <th>Joining Date</th>
-            <th>Mobile</th>
-            <th>Status</th>
-            <th>Place</th>
-            <th>Referred By</th>
-            <th>Active Documents</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-      
-    </tbody>
-</table>
+                <div class="investors-table-container">
+                    <table id="datatable" class="investors-table">
+                        <thead>
+                            <tr>
+                                <th>Sl No</th>
+                                <th>Client ID</th>
+                                <th>Client Name</th>
+                                <th>Active Funds</th>
+                                <th>Joining Date</th>
+                                <th>Mobile</th>
+                                <th>Status</th>
+                                <th>Place</th>
+                                <th>Referred By</th>
+                                <th>Active Documents</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dynamic rows go here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </form>
 
 
 
-   
+
 </body>
 </html>

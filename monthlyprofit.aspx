@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Adminapprove.aspx.cs" Inherits="Adminapprove" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="monthlyprofit.aspx.cs" Inherits="monthlyprofit" %>
 <%@ Register TagPrefix="ucx1" TagName="MyUserControl11" Src="~/sidenav2.ascx" %>
 <%@ Register TagPrefix="ucx" TagName="MyUserControl1" Src="~/header.ascx" %>
 
@@ -236,54 +236,99 @@
     </style>
 
     <script>
+        //$(document).ready(function () {
+        //    // Fetch data from the server
+        //    function fetchData(query = "") {
+        //        $.ajax({
+        //            url: 'Adminapprove.aspx/GetTableData',
+        //            method: 'POST',
+        //            contentType: 'application/json; charset=utf-8',
+        //            data: JSON.stringify({ search: query }),
+        //            dataType: 'json',
+        //            success: function (response) {
+        //                const data = JSON.parse(response.d);
+        //                let html = "";
+
+        //                if (data.length > 0) {
+        //                    data.forEach((row, index) => {
+        //                        html += `
+        //                            <tr>
+        //                                <td>${index + 1}</td>
+        //                                <td>${row.AgreementID}</td>
+        //                                <td>${row.ClientName}</td>
+        //                                <td>${row.Funds}</td>
+        //                                <td>${row.Term}</td>
+        //                                <td>${row.Priority}</td>
+        //                                <td>${row.StartDate}</td>
+        //                                <td>${row.ExpireDate}</td>
+        //                                <td>${row.BankAccount}</td>
+        //                                <td>${row.ReferBy}</td>
+        //                                <td>${row.Payments}</td>
+        //                                <td><button class="expand-btn"><i class="fas fa-chevron-down"></i></button></td>
+        //                            </tr>
+        //                            <tr class="expandable-row">
+        //                                <td colspan="12">
+        //                                    <div class="expandable-content">
+        //                                        <!-- Additional expandable row content here -->
+        //                                    </div>
+        //                                </td>
+        //                            </tr>`;
+        //                    });
+        //                } else {
+        //                    html = '<tr><td colspan="12">No data available</td></tr>';
+        //                }
+
+        //                $('#data-table').html(html);
+        //            },
+        //            error: function (error) {
+        //                console.error('Error fetching data:', error);
+        //            }
+        //        });
+
         $(document).ready(function () {
-            // Fetch data from the server
-            function fetchData(query = "") {
-                $.ajax({
-                    url: 'Adminapprove.aspx/GetTableData',
-                    method: 'POST',
-                    contentType: 'application/json; charset=utf-8',
-                    data: JSON.stringify({ search: query }),
-                    dataType: 'json',
-                    success: function (response) {
-                        const data = JSON.parse(response.d);
-                        let html = "";
+            // AJAX call to fetch data on page load
+            $.ajax({
+                type: "POST",
+                url: "monthlyprofit.aspx/Getmonthlyprofit", // Matches [WebMethod] name
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({ search: "" }), // Empty search query for initial load
+                success: function (response) {
+                    var data = response.d; // Deserialize response data
+                    var tableBody = $("#data-table tbody");
+                    tableBody.empty(); // Clear existing rows
 
-                        if (data.length > 0) {
-                            data.forEach((row, index) => {
-                                html += `
-                                    <tr>
-                                        <td>${index + 1}</td>
-                                        <td>${row.AgreementID}</td>
-                                        <td>${row.ClientName}</td>
-                                        <td>${row.Funds}</td>
-                                        <td>${row.Term}</td>
-                                        <td>${row.Priority}</td>
-                                        <td>${row.StartDate}</td>
-                                        <td>${row.ExpireDate}</td>
-                                        <td>${row.BankAccount}</td>
-                                        <td>${row.ReferBy}</td>
-                                        <td>${row.Payments}</td>
-                                        <td><button class="expand-btn"><i class="fas fa-chevron-down"></i></button></td>
-                                    </tr>
-                                    <tr class="expandable-row">
-                                        <td colspan="12">
-                                            <div class="expandable-content">
-                                                <!-- Additional expandable row content here -->
-                                            </div>
-                                        </td>
-                                    </tr>`;
-                            });
-                        } else {
-                            html = '<tr><td colspan="12">No data available</td></tr>';
-                        }
-
-                        $('#data-table').html(html);
-                    },
-                    error: function (error) {
-                        console.error('Error fetching data:', error);
+                    if (Array.isArray(data) && data.length > 0) {
+                        // Iterate through the data and append rows to the table
+                        $.each(data, function (index, item) {
+                            var row = `
+                 <tr>
+                     <td>${index + 1}</td>
+                     <td>${item.AgreementID}</td>
+                     <td>${item.ClientName}</td>
+                     <td>${item.Funds}</td>
+                     <td>${item.Term}</td>
+                     <td>${item.Priority}</td>
+                     <td>${item.StartDate}</td>
+                     <td>${item.ExpireDate}</td>
+                     <td>${item.BankAccount}</td>
+                     <td>${item.ReferBy}</td>
+                     <td><button class="expand-btn"><i class="fas fa-chevron-down"></i></button></td>
+                  </tr>`;
+                            tableBody.append(row);
+                        });
+                    } else {
+                        // If no data, show a message
+                        tableBody.append('<tr><td colspan="10">No data available</td></tr>');
                     }
-                });
+                },
+                error: function (error) {
+                    console.error("Error fetching data:", error);
+                }
+            });
+        });
+
+
     </script>
 
 
@@ -318,7 +363,7 @@
     </div>
 
     <div class="table-container">
-        <table>
+        <table id="data-table">
             <thead>
                 <tr>
                     <th>Sl No</th>
@@ -336,7 +381,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
+               <%-- <tr>
                     <td>1</td>
                     <td>AG6317001</td>
                     <td>ABC RKJ</td>
@@ -457,7 +502,7 @@
                           </div>
                       </div>
                   </td>
-              </tr>
+              </tr>--%>
             </tbody>
         </table>
     </div>
