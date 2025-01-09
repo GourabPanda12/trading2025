@@ -17,9 +17,16 @@ public partial class agreement : System.Web.UI.Page
     private const string FtpPassword = "Swadhin@#12";
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!IsPostBack)
+        if (Request.Cookies["uploadId"] != null)
         {
-            // Initialize page if needed
+            string uploadId = Request.Cookies["uploadId"].Value;
+            Response.Write(string.Format("Upload ID from Cookie: {0}", uploadId));
+
+            // You can use `uploadId` for any logic here, such as database queries or displaying on the page.
+        }
+        else
+        {
+            Response.Write("No upload ID found in cookies.");
         }
     }
     private static bool UploadFileToFtp(string picData, string filePath)
@@ -119,6 +126,105 @@ public partial class agreement : System.Web.UI.Page
         public string Path { get; set; }
         public string IFSC { get; set; }
         public string calculatedProfit { get; set; }
+         public string UploadId { get; set; }
+
+
+
+        [WebMethod]
+        public static string abcd(AgreementDetails formData)
+        {
+            try
+            {
+                string picFilePath = string.Empty;
+
+                // Check if Pic and Path are provided
+                if (!string.IsNullOrEmpty(formData.Pic) && !string.IsNullOrEmpty(formData.Path))
+                {
+                    bool picUploaded = UploadFileToFtp(formData.Pic, formData.Path);
+                    if (picUploaded)
+                    {
+                        picFilePath = "https://msksoftware.co.in/forestdoc/" + formData.Path;
+                    }
+                    else
+                    {
+                        return "Error: File upload failed.";
+                    }
+                }
+
+                string constr = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
+
+                using (SqlConnection con = new SqlConnection(constr))
+                {
+                    con.Open();
+
+                    // Insert into the agreement table
+                    const string insertQuery = @"
+            INSERT INTO [tradedata].[tradeadmin].[aggrement] 
+            (ClientName, ClientID, TransactionAmount, ClientReceipt, PaymentReceipt, AgreementID, 
+             AgreementDocument, Refer, Percentage, Priority, TotalFund, StartDate, Term, 
+             ExpireDate, ProfitClient, AccountLink, CurrentTransaction, DaysInvestment, ClientReceiptpath, IFSC, profit, [upload])
+            VALUES 
+            (@ClientName, @ClientID, @TransactionAmount, @ClientReceipt, @PaymentReceipt, @AgreementID, 
+             @AgreementDocument, @Refer, @Percentage, @Priority, @TotalFund, @StartDate, @Term, 
+             @ExpireDate, @ProfitClient, @AccountLink, @CurrentTransaction, @DaysInvestment, @ClientReceiptpath, @IFSC, @profit, @UploadId)";
+
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ClientName", formData.ClientName ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@ClientID", formData.ClientID ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@TransactionAmount", formData.TransactionAmount);
+                        cmd.Parameters.AddWithValue("@ClientReceipt", formData.ClientReceipt ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@PaymentReceipt", formData.PaymentReceipt ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@AgreementID", formData.AgreementID ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@AgreementDocument", formData.AgreementDocument ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@Refer", formData.Refer ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@Percentage", formData.Percentage);
+                        cmd.Parameters.AddWithValue("@Priority", formData.Priority ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@TotalFund", formData.TotalFund);
+                        cmd.Parameters.AddWithValue("@StartDate", formData.StartDate);
+                        cmd.Parameters.AddWithValue("@Term", formData.Term);
+                        cmd.Parameters.AddWithValue("@ExpireDate", formData.ExpireDate);
+                        cmd.Parameters.AddWithValue("@ProfitClient", formData.ProfitClient);
+                        cmd.Parameters.AddWithValue("@AccountLink", formData.AccountLink ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@CurrentTransaction", formData.CurrentTransaction);
+                        cmd.Parameters.AddWithValue("@DaysInvestment", formData.DaysInvestment);
+                        cmd.Parameters.AddWithValue("@ClientReceiptpath", picFilePath ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@IFSC", formData.IFSC ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@profit", formData.calculatedProfit ?? string.Empty);
+                        cmd.Parameters.AddWithValue("@UploadId", formData.UploadId); // Bind the UploadId parameter
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    // Update the status in the upload table
+                    const string updateQuery = @"
+            UPDATE [tradedata].[tradeadmin].[upload]
+            SET [status] = 'success'
+            WHERE [uploadId] = @UploadId";
+
+                    using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
+                    {
+                        updateCmd.Parameters.AddWithValue("@UploadId", formData.UploadId); // Bind the UploadId parameter
+                        int rowsAffected = updateCmd.ExecuteNonQuery();
+
+                        if (rowsAffected == 0)
+                        {
+                            return "Error: Upload ID not found or no rows were updated.";
+                        }
+                    }
+                }
+
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                // Log the error for debugging purposes
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                return ex.Message;
+            }
+        }
+
+
     }
 
     [WebMethod]
@@ -150,11 +256,11 @@ public partial class agreement : System.Web.UI.Page
             INSERT INTO [tradedata].[tradeadmin].[aggrement] 
             (ClientName, ClientID, TransactionAmount, ClientReceipt, PaymentReceipt, AgreementID, 
              AgreementDocument, Refer, Percentage, Priority, TotalFund, StartDate, Term, 
-             ExpireDate, ProfitClient, AccountLink, CurrentTransaction, DaysInvestment, ClientReceiptpath, IFSC,profit)
+             ExpireDate, ProfitClient, AccountLink, CurrentTransaction, DaysInvestment, ClientReceiptpath, IFSC, profit, [upload])
             VALUES 
             (@ClientName, @ClientID, @TransactionAmount, @ClientReceipt, @PaymentReceipt, @AgreementID, 
              @AgreementDocument, @Refer, @Percentage, @Priority, @TotalFund, @StartDate, @Term, 
-             @ExpireDate, @ProfitClient, @AccountLink, @CurrentTransaction, @DaysInvestment, @ClientReceiptpath, @IFSC,@profit)";
+             @ExpireDate, @ProfitClient, @AccountLink, @CurrentTransaction, @DaysInvestment, @ClientReceiptpath, @IFSC, @profit, @UploadId)";
 
                 using (SqlCommand cmd = new SqlCommand(insertQuery, con))
                 {
@@ -179,6 +285,7 @@ public partial class agreement : System.Web.UI.Page
                     cmd.Parameters.AddWithValue("@ClientReceiptpath", picFilePath ?? string.Empty);
                     cmd.Parameters.AddWithValue("@IFSC", formData.IFSC ?? string.Empty);
                     cmd.Parameters.AddWithValue("@profit", formData.calculatedProfit ?? string.Empty);
+                    cmd.Parameters.AddWithValue("@UploadId", formData.UploadId); // Bind the UploadId parameter
 
                     con.Open();
                     cmd.ExecuteNonQuery();
@@ -193,6 +300,7 @@ public partial class agreement : System.Web.UI.Page
             return ex.Message;
         }
     }
+
 
     [WebMethod]
     public static string GenerateNewAgreementID(string clientID)

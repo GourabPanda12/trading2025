@@ -16,10 +16,6 @@
 
           $(document).ready(function () {
 
-
-
-
-
               
             var table = $('#data-table').DataTable({
                 pageLength: 5,

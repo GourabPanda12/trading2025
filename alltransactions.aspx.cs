@@ -29,26 +29,30 @@ public partial class alltransactions : System.Web.UI.Page
     {
         List<ClientTransactionDTO> client = new List<ClientTransactionDTO>();
 
-        String connectionString = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
+        string connectionString = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
 
         using (SqlConnection con = new SqlConnection(connectionString))
         {
             try
             {
-                string query = @"SELECT 
-                    r.ClientName, 
-                    r.referBy, 
-                    u.Amount, 
-                    u.CreatedDate, 
-                    u.ClientId,
-                    u.MyDocPath
-    
-                FROM 
-                    registrations r 
-                RIGHT OUTER JOIN 
-                    upload u 
-                ON 
-                    u.ClientId = r.ClientId";
+                string query = @"
+SELECT 
+    r.ClientName, 
+    r.referBy, 
+    u.Amount, 
+    u.CreatedDate, 
+    u.ClientId,
+    u.MyDocPath,
+    u.uploadId
+FROM 
+    registrations r 
+RIGHT OUTER JOIN 
+    upload u 
+ON 
+    u.ClientId = r.ClientId
+WHERE 
+    u.status = 'pending'";
+
                 con.Open();
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
@@ -56,23 +60,27 @@ public partial class alltransactions : System.Web.UI.Page
                     {
                         while (reader.Read())
                         {
+                            int uploadId = reader.IsDBNull(6) ? 0 : reader.GetInt32(6); // Retrieve `uploadId`
+
+                            // Set the cookie
+                            HttpCookie uploadIdCookie = new HttpCookie("uploadId", uploadId.ToString())
+                            {
+                                Expires = DateTime.Now.AddHours(1) // Set expiration time for the cookie (1 hour)
+                            };
+                            HttpContext.Current.Response.Cookies.Add(uploadIdCookie); // Add cookie to the response
+
                             client.Add(new ClientTransactionDTO
                             {
                                 ClientName = reader.IsDBNull(0) ? string.Empty : reader.GetString(0),
                                 ReferBy = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
                                 Amount = reader.IsDBNull(2) ? 0 : reader.GetDecimal(2),
-                           
                                 CreatedDate = reader.IsDBNull(3) ? string.Empty : reader.GetDateTime(3).ToString("dd/MM/yyyy HH:mm:ss"),
-
                                 ClientId = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
-                                MyDocPath = reader.IsDBNull(5) ? string.Empty : reader.GetString(5)
-                            }
-
-
-                          );
-                        };
+                                MyDocPath = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                                uploadId = uploadId
+                            });
+                        }
                     }
-
                 }
             }
             catch (Exception ex)
@@ -81,9 +89,9 @@ public partial class alltransactions : System.Web.UI.Page
             }
         }
 
-
         return client;
     }
+
     public class ClientTransactionDTO
     {
         public string ClientName { get; set; }
@@ -92,6 +100,7 @@ public partial class alltransactions : System.Web.UI.Page
         public string CreatedDate { get; set; }
         public string ClientId { get; set; }
         public string MyDocPath { get; set; }
+        public int uploadId { get; set; }
     }
 
 
