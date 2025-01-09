@@ -78,8 +78,19 @@
                   const myDocPath = $(this).data('path');
                   const referBy = $(this).data('referby');
 
-                  window.location.href = `agreement.aspx?ClientId=${clientId}&ClientName=${encodeURIComponent(clientName)}&Amount=${amount}&ReferBy=${encodeURIComponent(referBy)}&MyDocPath=${encodeURIComponent(myDocPath)}`;
-                       });
+                  // Store data in localStorage
+                  const clientData = {
+                      ClientId: clientId,
+                      ClientName: clientName,
+                      Amount: amount,
+                      MyDocPath: myDocPath,
+                      ReferBy: referBy,
+                  };
+                  localStorage.setItem('clientData', JSON.stringify(clientData));
+
+                  // Redirect to the other page
+                  window.location.href = 'agreement.aspx';
+              });
 
 
 
@@ -459,7 +470,7 @@
                         <form id="newTransactionForm">
                             <div class="mb-3">
                                 <label for="clientId" class="form-label">Client ID</label>
-                                <input type="text" class="form-control" id="clientIdx" placeholder="Enter Client ID" required>
+                                <input type="text" class="form-control" id="clientIdx" name="clientIdx" placeholder="Enter Client ID" required>
                             </div>
                             <div class="mb-3">
                                 <label for="clientName" class="form-label">Client Name</label>
@@ -467,12 +478,12 @@
                             </div>
                             <div class="mb-3">
                                 <label for="transactionAmount" class="form-label">Transaction Amount</label>
-                                <input type="number" class="form-control" id="transactionAmount" placeholder="Enter Transaction Amount" required>
+                              <input type="number" class="form-control" id="transactionAmount" name="transactionAmount" placeholder="Enter Transaction Amount" required>
                             </div>
                             <div class="mb-3">
-                                <label for="receiptFile" class="form-label">Receipt by Client</label>
-                                <input type="file" class="form-control" id="receiptFile" required>
-                                                        <input type="hidden" value="" id="hiden" runat="server" /> <input type="hidden" value="" runat="server" id="hidden"  />
+                                 <label for="receiptFile" class="form-label">Receipt by Client</label>
+                                      <input type="file" class="form-control" id="receiptFile" name="receiptFile" required/>  
+                                          <input type="hidden" value="" id="hiden" runat="server" /> <input type="hidden" value="" runat="server" id="hidden"  />
 
                             </div>
                         </form>

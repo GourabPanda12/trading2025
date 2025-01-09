@@ -93,9 +93,9 @@ public partial class upload : System.Web.UI.Page
             {
                 string insertQuery = @"
                 INSERT INTO [tradedata].[tradeadmin].[upload] 
-                (Amount, MyDocPath, ClientId) 
+                (Amount, MyDocPath, ClientId,status) 
                 VALUES 
-                (@Amount, @MyDocPath, @ClientId)";
+                (@Amount, @MyDocPath, @ClientId),'pending'";
 
                 using (SqlCommand cmd = new SqlCommand(insertQuery, con))
                 {

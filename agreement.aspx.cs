@@ -108,7 +108,7 @@ public partial class agreement : System.Web.UI.Page
         public string ClientID { get; set; }
         public decimal TransactionAmount { get; set; }
         public string ClientReceipt { get; set; }
-        public string PaymentReceipt { get; set; }
+    
         public string AgreementID { get; set; }
         public string AgreementDocument { get; set; }
         public string Refer { get; set; }
@@ -254,11 +254,11 @@ public partial class agreement : System.Web.UI.Page
             {
                 const string insertQuery = @"
             INSERT INTO [tradedata].[tradeadmin].[aggrement] 
-            (ClientName, ClientID, TransactionAmount, ClientReceipt, PaymentReceipt, AgreementID, 
+            (ClientName, ClientID, TransactionAmount, ClientReceipt, AgreementID, 
              AgreementDocument, Refer, Percentage, Priority, TotalFund, StartDate, Term, 
              ExpireDate, ProfitClient, AccountLink, CurrentTransaction, DaysInvestment, ClientReceiptpath, IFSC, profit, [upload])
             VALUES 
-            (@ClientName, @ClientID, @TransactionAmount, @ClientReceipt, @PaymentReceipt, @AgreementID, 
+            (@ClientName, @ClientID, @TransactionAmount, @ClientReceipt, @AgreementID, 
              @AgreementDocument, @Refer, @Percentage, @Priority, @TotalFund, @StartDate, @Term, 
              @ExpireDate, @ProfitClient, @AccountLink, @CurrentTransaction, @DaysInvestment, @ClientReceiptpath, @IFSC, @profit, @UploadId)";
 
@@ -268,7 +268,7 @@ public partial class agreement : System.Web.UI.Page
                     cmd.Parameters.AddWithValue("@ClientID", formData.ClientID ?? string.Empty);
                     cmd.Parameters.AddWithValue("@TransactionAmount", formData.TransactionAmount);
                     cmd.Parameters.AddWithValue("@ClientReceipt", formData.ClientReceipt ?? string.Empty);
-                    cmd.Parameters.AddWithValue("@PaymentReceipt", formData.PaymentReceipt ?? string.Empty);
+             
                     cmd.Parameters.AddWithValue("@AgreementID", formData.AgreementID ?? string.Empty);
                     cmd.Parameters.AddWithValue("@AgreementDocument", formData.AgreementDocument ?? string.Empty);
                     cmd.Parameters.AddWithValue("@Refer", formData.Refer ?? string.Empty);
@@ -385,7 +385,8 @@ public partial class agreement : System.Web.UI.Page
         [StartDate], 
         [Term], 
         [expireDate],
-[TotalFund]
+        [TotalFund],
+         [Priority]
     FROM [tradedata].[tradeadmin].[aggrement]
     WHERE [AgreementID] = @AgreementID";
 
@@ -395,7 +396,8 @@ public partial class agreement : System.Web.UI.Page
             StartDate = string.Empty,
             Term = string.Empty,
             ExpireDate = string.Empty,
-            TotalFund = string.Empty
+            TotalFund = string.Empty,
+            Priority = string.Empty
         };
 
         // Using SQL connection and command
@@ -431,6 +433,10 @@ public partial class agreement : System.Web.UI.Page
                                 agreementDetails.TotalFund = reader["TotalFund"] != DBNull.Value
                                    ? reader["TotalFund"].ToString()
                                    : string.Empty;
+
+                                agreementDetails.Priority = reader["Priority"] != DBNull.Value
+                                   ? reader["Priority"].ToString()
+                                   : string.Empty;
                             }
                         }
                         else
@@ -457,7 +463,8 @@ public partial class agreement : System.Web.UI.Page
         public string Term { get; set; }
         public string ExpireDate { get; set; }
         public string TotalFund { get; set; }
-}
+        public string Priority { get;  set; }
+    }
 
 
     [WebMethod]

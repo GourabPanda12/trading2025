@@ -29,7 +29,7 @@ public partial class alltransactions : System.Web.UI.Page
     {
         List<ClientTransactionDTO> client = new List<ClientTransactionDTO>();
 
-        string connectionString = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
+        String connectionString = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
 
         using (SqlConnection con = new SqlConnection(connectionString))
         {

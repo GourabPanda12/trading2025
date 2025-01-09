@@ -212,19 +212,25 @@
     </style>
 
     <script>
-        // Function to get query parameter values by name
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }
+     
+      
 
         $(document).ready(function () {
 
-            $('#ClientID').val(getQueryParam('ClientId')); // Auto-fill Client ID
-            $('#clientName').val(decodeURIComponent(getQueryParam('ClientName'))); // Auto-fill Client Name
-            $('#TransactionAmount').val(getQueryParam('Amount')); // Auto-fill Transaction Amount
-            $('#refer').val(getQueryParam('ReferBy'));
-            $('#ClientReceipt').val(decodeURIComponent(getQueryParam('MyDocPath'))); // Auto-fill Client Receipt Path
+            const clientData = JSON.parse(localStorage.getItem('clientData'));
+
+            if (clientData) {
+                // Auto-fill fields with data from localStorage
+                $('#ClientID').val(clientData.ClientId); // Auto-fill Client ID
+                $('#clientName').val(clientData.ClientName); // Auto-fill Client Name
+                $('#TransactionAmount').val(clientData.Amount); // Auto-fill Transaction Amount
+                $('#refer').val(clientData.ReferBy); // Auto-fill Refer By
+                $('#ClientReceipt').val(clientData.MyDocPath); // Auto-fill Client Receipt Path
+            } else {
+                console.error('No client data found in localStorage.');
+            }
+
+
 
             $('.btn-upload').on('click', function () {
                 $(this).next('.file-input').trigger('click'); // Opens the file input dialog
@@ -298,7 +304,7 @@
                     ClientID: $("#ClientID").val(),
                     TransactionAmount: $("#TransactionAmount").val(),
                     ClientReceipt: $("#ClientReceipt").val(),
-                    PaymentReceipt: $("#PaymentReceipt").val(),
+            
                     AgreementID: $("#AgreementID").val(),
                     Agreementdocument: $("#Agreementdocument").val(),
                     refer: $("#refer").val(),
@@ -524,10 +530,11 @@
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Client ID: </label>
                                     <input type="text" class="form-control" id="ClientID" required>
+
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Transaction Amount:</label>
-                                    <input type="Number" class="form-control" id="TransactionAmount" required>
+                                    <input type="number" class="form-control" id="TransactionAmount" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Receipt By Client:</label>
@@ -535,7 +542,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Payment Receipt:</label>
-                                    <input type="text" class="form-control" id="PaymentReceipt" required>
+                                 
 
                                     <div class="input-group">
                                         <input type="file" class="form-control file-input" id="ClientReceiptx" required>
