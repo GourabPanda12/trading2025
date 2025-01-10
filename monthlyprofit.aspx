@@ -110,7 +110,7 @@
 
         td {
             padding: 12px;
-            text-align: center;
+            text-align:left;
             border-bottom: 1px solid #ddd;
         }
 
@@ -232,64 +232,43 @@
         }
         #dheader{
             margin-left:100px;
+        }      
+        
+        #data-table{
+            margin-left:50px !important;
+        }
+
+        
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .status-paid {
+            background-color: #198754;
+        }
+
+        .status-pending {
+            background-color: #dc3545;
+        }
+
+        .profile-btn {
+            background-color: #0a2647;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: auto;
         }
     </style>
 
     <script>
-        //$(document).ready(function () {
-        //    // Fetch data from the server
-        //    function fetchData(query = "") {
-        //        $.ajax({
-        //            url: 'Adminapprove.aspx/GetTableData',
-        //            method: 'POST',
-        //            contentType: 'application/json; charset=utf-8',
-        //            data: JSON.stringify({ search: query }),
-        //            dataType: 'json',
-        //            success: function (response) {
-        //                const data = JSON.parse(response.d);
-        //                let html = "";
-
-        //                if (data.length > 0) {
-        //                    data.forEach((row, index) => {
-        //                        html += `
-        //                            <tr>
-        //                                <td>${index + 1}</td>
-        //                                <td>${row.AgreementID}</td>
-        //                                <td>${row.ClientName}</td>
-        //                                <td>${row.Funds}</td>
-        //                                <td>${row.Term}</td>
-        //                                <td>${row.Priority}</td>
-        //                                <td>${row.StartDate}</td>
-        //                                <td>${row.ExpireDate}</td>
-        //                                <td>${row.BankAccount}</td>
-        //                                <td>${row.ReferBy}</td>
-        //                                <td>${row.Payments}</td>
-        //                                <td><button class="expand-btn"><i class="fas fa-chevron-down"></i></button></td>
-        //                            </tr>
-        //                            <tr class="expandable-row">
-        //                                <td colspan="12">
-        //                                    <div class="expandable-content">
-        //                                        <!-- Additional expandable row content here -->
-        //                                    </div>
-        //                                </td>
-        //                            </tr>`;
-        //                    });
-        //                } else {
-        //                    html = '<tr><td colspan="12">No data available</td></tr>';
-        //                }
-
-        //                $('#data-table').html(html);
-        //            },
-        //            error: function (error) {
-        //                console.error('Error fetching data:', error);
-        //            }
-        //        });
 
         $(document).ready(function () {
-            // AJAX call to fetch data on page load
+            // Fetch data when the page loads
             $.ajax({
                 type: "POST",
-                url: "monthlyprofit.aspx/Getmonthlyprofit", // Matches [WebMethod] name
+                url: "monthlyprofit.aspx/Getmonthlyprofit", // WebMethod URL
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 data: JSON.stringify({ search: "" }), // Empty search query for initial load
@@ -302,31 +281,78 @@
                         // Iterate through the data and append rows to the table
                         $.each(data, function (index, item) {
                             var row = `
-                 <tr>
-                     <td>${index + 1}</td>
-                     <td>${item.AgreementID}</td>
-                     <td>${item.ClientName}</td>
-                     <td>${item.Funds}</td>
-                     <td>${item.Term}</td>
-                     <td>${item.Priority}</td>
-                     <td>${item.StartDate}</td>
-                     <td>${item.ExpireDate}</td>
-                     <td>${item.BankAccount}</td>
-                     <td>${item.ReferBy}</td>
-                     <td><button class="expand-btn"><i class="fas fa-chevron-down"></i></button></td>
-                  </tr>`;
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${item.AgreementID}</td>
+                            <td>${item.ClientName}</td>
+                            <td>${item.Funds}</td>
+                            <td>${item.Term}</td>
+                            <td>${item.Priority}</td>
+                            <td>${item.StartDate}</td>
+                            <td>${item.ExpireDate}</td>
+                            <td>${item.BankAccount}</td>
+                            <td>${item.ReferBy}</td>
+                            <td>
+                                <button type="button" 
+                                        class="expand-btn btn btn-sm btn-info" 
+                                        data-term="${item.Term}">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </td>
+                        </tr>`;
                             tableBody.append(row);
                         });
                     } else {
-                        // If no data, show a message
-                        tableBody.append('<tr><td colspan="10">No data available</td></tr>');
+                        tableBody.append('<tr><td colspan="11">No data available</td></tr>');
                     }
                 },
                 error: function (error) {
                     console.error("Error fetching data:", error);
                 }
             });
-        });
+
+            // Handle button clicks for dynamically added buttons
+            $(document).on("click", ".expand-btn", function () {
+                var $button = $(this);
+                var $row = $button.closest("tr");
+
+                if ($row.next().hasClass("expandable-row")) {
+                    $row.next().toggle();
+                } else {
+                    var payments = [
+                        { date: "3rd Jan 2025", amount: "9,032.26", status: "Paid" },
+                        { date: "3rd Feb 2025", amount: "12,000.00", status: "Pending" },
+                        { date: "3rd Mar 2025", amount: "12,000.00", status: "Pending" }
+                    ];
+
+                    var paymentElements = payments.map(payment => `
+                        <div class="payment-status-container">
+                            <div class="payment-date">${payment.date}</div>
+                            <div class="payment-amount">₹ ${payment.amount}</div>
+                            <button class="upload-file-btn">
+                                <i class="fas fa-upload"></i> Upload File
+                            </button>
+                            <div class="status-indicator status-${payment.status.toLowerCase()}">
+                                ${payment.status}
+                            </div>
+                            <button class="profile-btn">
+                                Go To Profile
+                            </button>
+                        </div>
+                    `).join('');
+
+                    var expandableRow = `
+                        <tr class="expandable-row">
+                            <td colspan="11">
+                                <div class="expandable-content">
+                                    ${paymentElements}
+                                </div>
+                            </td>
+                        </tr>`;
+
+                    $row.after(expandableRow);
+                }
+            });        });
 
 
     </script>
@@ -362,8 +388,9 @@
         <i class="fas fa-search search-icon"></i>
     </div>
 
-    <div class="table-container">
-        <table id="data-table">
+    <div class="table-container p-3 bg-light rounded shadow">
+    <table id="data-table" class="table table-striped table-bordered table-hover">
+      
             <thead>
                 <tr>
                     <th>Sl No</th>
@@ -381,128 +408,6 @@
                 </tr>
             </thead>
             <tbody>
-               <%-- <tr>
-                    <td>1</td>
-                    <td>AG6317001</td>
-                    <td>ABC RKJ</td>
-                    <td>200,000.00</td>
-                    <td>3</td>
-                    <td>P2</td>
-                    <td>02-10-2024</td>
-                    <td>03-01-2025</td>
-                    <td>7382000100075419</td>
-                    <td>PNB</td>
-                    <td>Danish</td>
-                    <td><button class="expand-btn"><i class="fas fa-chevron-down"></i></button></td>
-                </tr>
-                <tr class="expandable-row">
-                    <td colspan="12">
-                        <div class="expandable-content">
-                            <div class="installment-box">
-                                <div class="date-amount">
-                                    <div class="installment-date">3<sup>rd</sup> Jan 2025</div>
-                                    <div class="installment-amount">9,032.26</div>
-                                </div>
-                                <button class="upload-file-btn">
-                                    <i class="fas fa-upload"></i> Upload File
-                                </button>
-                                <button class="status-btn status-paid">
-                                    <i class="fas fa-check"></i> Paid
-                                </button>
-                            </div>
-                            <div class="installment-box">
-                                <div class="date-amount">
-                                    <div class="installment-date">3<sup>rd</sup> Feb 2025</div>
-                                    <div class="installment-amount">12,000.00</div>
-                                </div>
-                                <button class="upload-file-btn">
-                                    <i class="fas fa-upload"></i> Upload File
-                                </button>
-                                <button class="status-btn status-pending">
-                                    <i class="fas fa-clock"></i> Pending
-                                </button>
-                            </div>
-                            <div class="installment-box">
-                                <div class="date-amount">
-                                    <div class="installment-date">3<sup>rd</sup> Mar 2025</div>
-                                    <div class="installment-amount">12,000.00</div>
-                                </div>
-                                <button class="upload-file-btn">
-                                    <i class="fas fa-upload"></i> Upload File
-                                </button>
-                                <button class="status-btn status-pending">
-                                    <i class="fas fa-clock"></i> Pending
-                                </button>
-                            </div>
-                            <div>
-                                <button class="profile-btn">
-                                    <i class="fas fa-user"></i> Go To Profile
-                                </button>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>AG2589047</td>
-                    <td>MGJ POD</td>
-                    <td>700,000.00</td>
-                    <td>6</td>
-                    <td>P2</td>
-                    <td>01-12-2024</td>
-                    <td>02-03-2025</td>
-                    <td>9090546446@ybl</td>
-                    <td></td>
-                    <td>Danish</td>
-                    <td><button class="expand-btn"><i class="fas fa-chevron-down"></i></button></td>
-                </tr>
-                <tr class="expandable-row">
-                  <td colspan="12">
-                      <div class="expandable-content">
-                          <div class="installment-box">
-                              <div class="date-amount">
-                                  <div class="installment-date">4<sup>rd</sup> Jan 2024</div>
-                                  <div class="installment-amount">5,232.26</div>
-                              </div>
-                              <button class="upload-file-btn">
-                                  <i class="fas fa-upload"></i> Upload File
-                              </button>
-                              <button class="status-btn status-paid">
-                                  <i class="fas fa-check"></i> Paid
-                              </button>
-                          </div>
-                          <div class="installment-box">
-                              <div class="date-amount">
-                                  <div class="installment-date">7<sup>th</sup> Feb 2023</div>
-                                  <div class="installment-amount">14,000.00</div>
-                              </div>
-                              <button class="upload-file-btn">
-                                  <i class="fas fa-upload"></i> Upload File
-                              </button>
-                              <button class="status-btn status-pending">
-                                  <i class="fas fa-clock"></i> Pending
-                              </button>
-                          </div>
-                          <div class="installment-box">
-                              <div class="date-amount">
-                                  <div class="installment-date">3<sup>rd</sup> Mar 2025</div>
-                                  <div class="installment-amount">12,000.00</div>
-                              </div>
-                              <button class="upload-file-btn">
-                                  <i class="fas fa-upload"></i> Upload File
-                              </button>
-                              <button class="status-btn status-pending">
-                                  <i class="fas fa-clock"></i> Pending
-                              </button>
-                          </div>
-                          <div>
-                              <button class="profile-btn">
-                                  <i class="fas fa-user"></i> Go To Profile
-                              </button>
-                          </div>
-                      </div>
-                  </td>
-              </tr>--%>
             </tbody>
         </table>
     </div>
@@ -518,59 +423,5 @@
         </div>
     </div>
 
-    <script>
-        // Expand/Collapse functionality
-        document.querySelectorAll('.expand-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const expandableRow = button.closest('tr').nextElementSibling;
-                const isExpanded = expandableRow.style.display === 'table-row';
-                const icon = button.querySelector('i');
-                
-                // Close all other expanded rows
-                document.querySelectorAll('.expandable-row').forEach(row => {
-                    row.style.display = 'none';
-                    row.previousElementSibling.querySelector('.expand-btn i').className = 'fas fa-chevron-down';
-                });
-
-                // Toggle current row
-                expandableRow.style.display = isExpanded ? 'none' : 'table-row';
-                icon.className = isExpanded ? 'fas fa-chevron-down' : 'fas fa-chevron-up';
-            });
-        });
-
-        // Search functionality
-        const searchInput = document.querySelector('.search-input');
-        searchInput.addEventListener('input', () => {
-            const searchTerm = searchInput.value.toLowerCase();
-            const rows = document.querySelectorAll('tbody tr:not(.expandable-row)');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-                
-                // Hide expanded content when filtering
-                const expandedRow = row.nextElementSibling;
-                if (expandedRow && expandedRow.classList.contains('expandable-row')) {
-                    expandedRow.style.display = 'none';
-                    row.querySelector('.expand-btn i').className = 'fas fa-chevron-down';
-                }
-            });
-        });
-
-        // File upload simulation
-        document.querySelectorAll('.upload-file-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.click();
-                
-                input.addEventListener('change', () => {
-                    if (input.files.length > 0) {
-                        button.innerHTML = `<i class="fas fa-file"></i> ${input.files[0].name}`;
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 </html>       
