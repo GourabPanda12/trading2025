@@ -46,7 +46,7 @@ public partial class investorlist : System.Web.UI.Page
             try
             {
                 _connection.Open();
-                string query = "SELECT TOP (1000) Id, ClientId, ClientName, JoiningDate, MobileNo, Status, Address, ReferBy, MyDocPath FROM tradedata.tradeadmin.registrations";
+                string query = "SELECT  Id, ClientId, ClientName, JoiningDate, MobileNo, Status, Address, ReferBy, MyDocPath FROM tradedata.tradeadmin.registrations";
 
                 using (SqlCommand cmd = new SqlCommand(query, _connection))
                 using (SqlDataReader reader = cmd.ExecuteReader())
