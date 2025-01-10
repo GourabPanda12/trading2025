@@ -128,26 +128,39 @@ public partial class profile : System.Web.UI.Page
         string connectionString = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
 
         string query = @"
-        SELECT 
-            AgreementID, 
-            TotalFund,
-            Term, 
-            StartDate, 
-            ExpireDate, 
-            Priority, 
-            COUNT(*) AS NoOfPayments
-        FROM 
-            [tradedata].[tradeadmin].[aggrement] 
-        WHERE 
-            [ClientId] = @ClientId
-        GROUP BY 
-            AgreementID, 
-            TotalFund, 
-            Term, 
-            StartDate, 
-            ExpireDate, 
-            Priority;
-    ";
+    WITH LatestTransactions AS (
+    SELECT 
+        [AgreementID],
+        [TransactionAmount],
+        [TotalFund],
+        [Term],
+        [StartDate],
+        [ExpireDate],
+        [Priority],
+        [CreatedDate],
+        ROW_NUMBER() OVER (PARTITION BY [AgreementID] ORDER BY [CreatedDate] DESC) AS rn
+    FROM 
+        [tradedata].[tradeadmin].[aggrement]
+    WHERE 
+        [ClientId] = @ClientId
+)
+SELECT 
+    [AgreementID],
+    [TotalFund],
+    [Term],
+    [StartDate],
+    [ExpireDate],
+    [Priority],
+    (SELECT COUNT(*) 
+     FROM [tradedata].[tradeadmin].[aggrement] AS sub 
+     WHERE sub.[AgreementID] = main.[AgreementID]) AS NoOfPayments
+FROM 
+    LatestTransactions main
+WHERE 
+    rn = 1 
+ORDER BY 
+    [CreatedDate] DESC;";
+
 
         try
         {

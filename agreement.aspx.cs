@@ -8,6 +8,7 @@ using System.Configuration;
 using System.Web.Services;
 using System.Net;
 using System.Activities.Statements;
+using System.Web;
 
 
 public partial class agreement : System.Web.UI.Page
@@ -144,6 +145,15 @@ public partial class agreement : System.Web.UI.Page
     {
         try
         {
+            HttpCookie uploadCookie = HttpContext.Current.Request.Cookies["uploadId"];
+            string uploadId = uploadCookie != null ? uploadCookie.Value : string.Empty;
+
+            // Ensure that the UploadId exists
+            if (string.IsNullOrEmpty(uploadId))
+            {
+                return "Error: Upload ID is missing in the cookies.";
+            }
+
             string picFilePath = string.Empty;
 
             // Check if Pic and Path are provided
@@ -197,12 +207,29 @@ public partial class agreement : System.Web.UI.Page
                     cmd.Parameters.AddWithValue("@ClientReceiptpath", picFilePath ?? string.Empty);
                     cmd.Parameters.AddWithValue("@IFSC", formData.IFSC ?? string.Empty);
                     cmd.Parameters.AddWithValue("@profit", formData.calculatedProfit ?? string.Empty);
-                    cmd.Parameters.AddWithValue("@UploadId", formData.UploadId); // Bind the UploadId parameter
+                   
+                    cmd.Parameters.AddWithValue("@UploadId", uploadId);
 
                     con.Open();
                     cmd.ExecuteNonQuery();
                 }
+                const string updateQuery = @"
+            UPDATE [tradedata].[tradeadmin].[upload]
+            SET [status] = 'success'
+            WHERE [uploadId] = @UploadId";
+
+                using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
+                {
+                    updateCmd.Parameters.AddWithValue("@UploadId", uploadId); // Bind the UploadId parameter
+                    int rowsAffected = updateCmd.ExecuteNonQuery();
+
+                    if (rowsAffected == 0)
+                    {
+                        return "Error: Upload ID not found or no rows were updated.";
+                    }
+                }
             }
+
             return "Success";
         }
         catch (Exception ex)
@@ -259,7 +286,7 @@ public partial class agreement : System.Web.UI.Page
         // Query to fetch the latest AgreementID for the given ClientID
         string query = @"
     SELECT TOP 1 [AgreementID]
-    FROM [tradedata].[tradeadmin].[AgreementID]
+    FROM [tradedata].[tradeadmin].[aggrement]
     WHERE [ClientID] = @ClientID
     ORDER BY [CreatedDate] DESC"; // Ordering by CreatedDate in descending order to get the latest one
 

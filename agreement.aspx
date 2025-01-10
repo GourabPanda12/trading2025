@@ -337,6 +337,7 @@
                     success: function (response) {  
                         alert("Main data successfully registered.");
                         window.location.reload();
+                        window.location.href = "alltransactions.aspx";
                     },
                     error: function (response) {
                         alert("Error saving main data: " + response.responseText);
@@ -397,7 +398,7 @@
                             $("#StartDate").val(details.StartDate);  // Set Start Date
                             $("#Term").val(details.Term);  // Set Term
                             $("#expireDate").val(details.ExpireDate);
-
+                            $("#Priority").val(details.Priority);
                             var totalFund = parseFloat(details.TotalFund) || 0; // Ensure it's a number
                           // Ensure it's a number
                             var transactionAmount = parseFloat($("#TransactionAmount").val()) || 0;
