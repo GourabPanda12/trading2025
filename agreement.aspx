@@ -348,6 +348,13 @@
 
             $("#btn1").click(function () {
                 const clientID = $("#ClientID").val();
+                // Check if AgreementID is already generated
+
+                if ($("#AgreementID").val()) {
+                    alert("AgreementID is already generated. Please proceed with the existing one.");
+                    return; // Exit the function if AgreementID already exists
+                }
+
                 if (clientID.length >= 5) {
                     $.ajax({
                         type: "POST",
@@ -369,55 +376,57 @@
 
 
              
-        $("#btn2").click(function () {
-    const clientID = $("#ClientID").val();  // Get the client ID from input field
-  
-    // First AJAX call to fetch AgreementID
-    $.ajax({
-        type: "POST",
-        url: "agreement.aspx/ExistingclientID",  // The backend method URL to fetch AgreementID
-        data: JSON.stringify({ clientID: clientID }),  // Sending clientID to the backend
-        contentType: "application/json; charset=utf-8",  // Data type
-        dataType: "json",  // Expecting a JSON response
-        success: function (response) {
-            if (response.d) {  // Check if response is valid
-                const agreementID = response.d;  // Store the AgreementID
-                $("#AgreementID").val(agreementID);  // Set the AgreementID to the input field
+            $("#btn2").click(function () {
+                const clientID = $("#ClientID").val(); // Get the client ID from input field
 
-                // Second AJAX call to fetch agreement details using the AgreementID
+               
+
+                // First AJAX call to fetch AgreementID
                 $.ajax({
                     type: "POST",
-                    url: "agreement.aspx/FetchAgreementDetails",  // The backend method URL to fetch agreement details
-                    data: JSON.stringify({  agreementID: agreementID }),  // Sending both clientID and AgreementID to the backend
-                    contentType: "application/json; charset=utf-8",  // Data type
-                    dataType: "json",  // Expecting a JSON response
-                    success: function (detailsResponse) {
-                        if (detailsResponse.d) {  // Check if response is valid
-                            var details = detailsResponse.d;
-                            // Set the fetched values to the input fields
-                            $("#StartDate").val(details.StartDate);  // Set Start Date
-                            $("#Term").val(details.Term);  // Set Term
-                            $("#expireDate").val(details.ExpireDate);
-                            $("#Priority").val(details.Priority);
-                            var totalFund = parseFloat(details.TotalFund) || 0; // Ensure it's a number
-                          // Ensure it's a number
-                            var transactionAmount = parseFloat($("#TransactionAmount").val()) || 0;
+                    url: "agreement.aspx/ExistingclientID", // The backend method URL to fetch AgreementID
+                    data: JSON.stringify({ clientID: clientID }), // Sending clientID to the backend
+                    contentType: "application/json; charset=utf-8", // Data type
+                    dataType: "json", // Expecting a JSON response
+                    success: function (response) {
+                        if (response.d) { // Check if response is valid
+                            const agreementID = response.d; // Store the AgreementID
+                            $("#AgreementID").val(agreementID); // Set the AgreementID to the input field
 
-                            var combinedTotal = totalFund + transactionAmount;
-                            $("#TotalFund").val(combinedTotal);
+                            // Second AJAX call to fetch agreement details using the AgreementID
+                            $.ajax({
+                                type: "POST",
+                                url: "agreement.aspx/FetchAgreementDetails", // The backend method URL to fetch agreement details
+                                data: JSON.stringify({ agreementID: agreementID }), // Sending AgreementID to the backend
+                                contentType: "application/json; charset=utf-8", // Data type
+                                dataType: "json", // Expecting a JSON response
+                                success: function (detailsResponse) {
+                                    if (detailsResponse.d) { // Check if response is valid
+                                        var details = detailsResponse.d;
+                                        // Set the fetched values to the input fields
+                                        $("#StartDate").val(details.StartDate); // Set Start Date
+                                        $("#Term").val(details.Term); // Set Term
+                                        $("#expireDate").val(details.ExpireDate);
+                                        $("#Priority").val(details.Priority);
+                                        var totalFund = parseFloat(details.TotalFund) || 0; // Ensure it's a number
+                                        var transactionAmount = parseFloat($("#TransactionAmount").val()) || 0;
+
+                                        var combinedTotal = totalFund + transactionAmount;
+                                        $("#TotalFund").val(combinedTotal);
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error("Error fetching agreement details:", error);
+                                }
+                            });
                         }
                     },
                     error: function (xhr, status, error) {
-                        console.error("Error fetching agreement details:", error);
+                        console.error("Error fetching AgreementID:", error);
                     }
                 });
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error("Error fetching AgreementID:", error);
-        }
-    });
-});
+            });
+
 
           
                
@@ -553,7 +562,7 @@
                                 <div class="mb-3 position-relative">
                                     <label class="form-label fw-bold" for="AgreementID">Agreement ID:</label>
                                     <div class="input-container position-relative">
-                                        <input type="text" class="form-control" id="AgreementID" required>
+                                        <input type="text" class="form-control" id="AgreementID" required readonly>
                                         <div class="button-group">
                                             <button type="button" class="btn new me-2" id="btn1">Create New</button>
                                             <button type="button" class="btn new" id="btn2">Link to Existing ID</button>
