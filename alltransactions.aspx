@@ -16,59 +16,72 @@
 
           $(document).ready(function () {
 
-              
-            var table = $('#data-table').DataTable({
-                pageLength: 5,
-                responsive: true,
-                dom: 'Bfrtip'
-            });
+              $('#status-filter').on('change', function () {
+                  const filterValue = $(this).val();
+                  table.column(6).search(filterValue).draw();
+              });
 
-            $('#status-filter').on('change', function () {
-                const filterValue = $(this).val();
-                table.column(6).search(filterValue).draw();
-            });
-      
 
-        // AJAX call to fetch data from the server
-        $.ajax({
-            type: "POST",
-            url: "alltransactions.aspx/GetAllTransactions",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (response) {
-                // Clear the existing rows
-                table.clear();
+              const table = $('#data-table').DataTable({
+                  pageLength: 5,
+                  responsive: true,
+                  dom: 'Bfrtip',
+                  buttons: [
+                      'copy', 'csv', 'excel', 'pdf', 'print'
+                  ],
+                  columnDefs: [
+                      {
+                          targets: [8], // Index of the 'Upload ID' column
+                          visible: false, // Hide the column from user view
+                          searchable: false // Prevent search in hidden column
+                      }
+                  ]
+              });
 
-                // Process the response data
-                const transactions = response.d; // Assuming response.d contains the array of transaction data
+              // AJAX call to fetch data and populate the DataTable
+              $.ajax({
+                  type: "POST",
+                  url: "alltransactions.aspx/GetAllTransactions",
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",
+                  success: function (response) {
+                      // Clear the existing rows
+                      table.clear();
 
-                // Loop through the data and add rows to the DataTable
-                transactions.forEach((transaction, index) => {
-                    table.row.add([
-                        index + 1, // Sl No
-                        transaction.ClientId, // Client ID
-                        transaction.ClientName, // Client Name
-                        transaction.Amount, // Transaction Amount
-                        transaction.ReferBy, // Referred By
-                        transaction.CreatedDate, // Date and Time
-                        `<a href="${transaction.MyDocPath}" target="_blank">View Receipt</a>`, // Receipt by Client
-                        `<button class="btn-action" 
-                 data-id="${transaction.ClientId}" 
-                 data-name="${transaction.ClientName}" 
-                 data-amount="${transaction.Amount}" 
-                 data-path="${transaction.MyDocPath}" 
-                 data-referby="${transaction.ReferBy}">Create Agreement</button>` // Action column
-                    ]);
-                });
+                      // Process the response data
+                      const transactions = response.d;
 
-                // Redraw the table to display the new data
-                table.draw();
+                      // Loop through the data and add rows to the DataTable
+                      transactions.forEach((transaction, index) => {
+                          console.log("Upload ID for this transaction: ", transaction.uploadId);
 
-            },
-            error: function (error) {
-                console.error("Error fetching transactions:", error);
-            }
-        });
+                          table.row.add([
+                              index + 1, // Sl No
+                              transaction.ClientId, // Client ID
+                              transaction.ClientName, // Client Name
+                              transaction.Amount.toFixed(2), // Transaction Amount
+                              transaction.ReferBy, // Referred By
+                              transaction.CreatedDate, // Date and Time
+                              `<a href="${transaction.MyDocPath}" target="_blank">View Receipt</a>`, // Receipt by Client
+                              `<button class="btn-action" 
+                    data-id="${transaction.ClientId}" 
+                    data-name="${transaction.ClientName}" 
+                    data-amount="${transaction.Amount}" 
+                    data-path="${transaction.MyDocPath}" 
+                    data-referby="${transaction.ReferBy}"
+                    data-uploadid="${transaction.uploadId}">Create Agreement</button>`, // Action column with uploadId
+                              transaction.uploadId // Hidden Upload ID (will not be visible)
+                          ]);
+                      });
+
+                      // Redraw the table to display the new data
+                      table.draw();
+                  },
+                  error: function (error) {
+                      console.error("Error fetching transactions:", error);
+                  }
+              });
+
 
         // Add event listeners for dynamic actions (optional)
               $('#data-table').on('click', '.btn-action', function () {
@@ -77,6 +90,7 @@
                   const amount = $(this).data('amount');
                   const myDocPath = $(this).data('path');
                   const referBy = $(this).data('referby');
+                  const uploadId = $(this).data('uploadid');  // Add uploadId from the data attribute
 
                   // Store data in localStorage
                   const clientData = {
@@ -85,12 +99,15 @@
                       Amount: amount,
                       MyDocPath: myDocPath,
                       ReferBy: referBy,
+                      UploadId: uploadId  // Add uploadId to the clientData object
                   };
+
                   localStorage.setItem('clientData', JSON.stringify(clientData));
 
                   // Redirect to the other page
                   window.location.href = 'agreement.aspx';
               });
+
 
 
 

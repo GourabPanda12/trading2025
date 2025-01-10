@@ -24,6 +24,8 @@ public partial class alltransactions : System.Web.UI.Page
     {
 
     }
+
+
     [WebMethod]
     public static List<ClientTransactionDTO> GetAllTransactions()
     {
@@ -60,21 +62,9 @@ WHERE
                     {
                         while (reader.Read())
                         {
-                            int uploadId = reader.IsDBNull(6) ? 0 : reader.GetInt32(6); // Retrieve `uploadId`
+                            
 
-                            // Check if the cookie already exists
-                            if (HttpContext.Current.Request.Cookies["uploadId"] == null)
-                            {
-                                // Set the cookie only once for the first `uploadId` found
-                                HttpCookie uploadIdCookie = new HttpCookie("uploadId", uploadId.ToString())
-                                {
-                                    Expires = DateTime.Now.AddHours(1), // Set expiration time for the cookie (1 hour)
-                                    Path = "/", // Make the cookie accessible across the entire domain
-                                    Secure = true, // Ensure cookie is sent over HTTPS (optional)
-                                    SameSite = SameSiteMode.None // Allow cross-site cookies (optional)
-                                };
-                                HttpContext.Current.Response.Cookies.Add(uploadIdCookie); // Add cookie to the response
-                            }
+                          
 
                             client.Add(new ClientTransactionDTO
                             {
@@ -84,7 +74,7 @@ WHERE
                                 CreatedDate = reader.IsDBNull(3) ? string.Empty : reader.GetDateTime(3).ToString("dd/MM/yyyy HH:mm:ss"),
                                 ClientId = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
                                 MyDocPath = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
-                                uploadId = uploadId
+                                uploadId = reader.IsDBNull(6) ? 0 : reader.GetInt32(6)
                             });
                         }
                     }
