@@ -10,106 +10,150 @@
       <ucx:MyUserControl1 runat="server" />
     <title></title>
 
-<style>
-.agreement-container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 45px;
-}
+    <style>
+        .agreement-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 45px;
+        }
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .profile-header h2 {
+            color: #1a2947;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .profile-header h3 {
+            color: #1a2947;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .basic-details {
+            display: flex;
+            justify-content: space-around;
+            background-color: #1a2947;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: 70%;
+        }
+        .bd {
+            margin: 0 0 10px 0;
+            font-size: 22px;
+            font-weight: 600;
+            padding-left: 16px;
+        }
+        .basic-details .details-left p, 
+        .basic-details .details-right p {
+            margin: 9px 0;
+            letter-spacing: .7px;
+            font-size: 17px;
+        }
+        .download-btn {
+            background-color: #087a9f;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .download-btn:hover {
+            background-color: #065f7d;
+        }
+        .transaction-details h3 {
+            margin-bottom: 10px;
+            color: #000000;
+            margin: 0 0 10px 0;
+            font-size: 22px;
+            font-weight: 600;
+            padding-left: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 10px;
+            font-size: 15px;
+        }
+        table th {
+            background-color: #1a2947;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        table tbody tr:hover {
+            background-color: #eaf4f8;
+        }
+        .profit-details {
+            margin-top: 30px;
+            padding: 20px;
+        }
+        .status-paid {
+            color: green;
+        }
+        .status-pending {
+            color: orange;
+        }
+        .download-link {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .upload-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
 
-    .profile-header {
-    display: flex
-;
-    justify-content: space-between;
-    align-items: center;
-}
+         .emergency-withdraw {
+            margin-top: 30px;
+            padding: 20px;
+        }
+        .withdraw-btn {
+            background-color: #1a2947;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            float: right;
+            margin-bottom: 10px;
+        }
+        .modal-header {
+            background-color: #1a2947;
+            color: white;
+        }
+        .modal-title {
+            color: white;
+        }
+        .withdraw-submit-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+        }
+        .read-link {
+            color: #ffc107;
+            text-decoration: none;
+        }
+    </style>
 
-.profile-header h2 {
-    color: #1a2947;
-    font-size: 28px;
-    font-weight: 600;
-}
-
-.profile-header h3 {
-    color: #1a2947;
-    font-size: 28px;
-    font-weight: 600
-}
-.basic-details {
-    display: flex
-;
-    justify-content: space-around;
-    background-color: #1a2947;
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    width: 70%;
-}
-.bd {
-    margin: 0 0 10px 0;
-    font-size: 22px;
-    font-weight: 600;
-    padding-left: 16px;
-}
-
-.basic-details .details-left p, .basic-details .details-right p {
-    margin: 9px 0;
-    letter-spacing: .7px;
-    font-size: 17px;
-}
-    .download-btn {
-      background-color: #087a9f;
-      color: #fff;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .download-btn:hover {
-      background-color: #065f7d;
-    }
-
-    .transaction-details h3 {
-    margin-bottom: 10px;
-    color: #000000;
-    margin: 0 0 10px 0;
-    font-size: 22px;
-    font-weight: 600;
-    padding-left: 16px;
-}
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    table th, table td {
-    border: 1px solid #ddd;
-    text-align: center;
-    padding: 10px;
-    font-size: 15px;
-}
-
-    table th {
-    background-color: #1a2947;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 500;
-}
-
-    table tbody tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-
-    table tbody tr:hover {
-      background-color: #eaf4f8;
-    }
-</style>
       <script>
           $(document).ready(function () {
               $('.btn-download').on('click', function () {
@@ -252,73 +296,87 @@
               }
 
 
-
-
-
-
           });
       </script>
 
 </head>
-<body>
-    <form id="form1" runat="server">
+    <body>
+ <form id="form1">
         <div>
-              <ucx1:MyUserControl11 runat="server" />
+            <div class="agreement-container">
+                <div class="profile-header">
+                    <h2>Agreement Profile</h2>
+                    <h3 id="Agreement"></h3>
+                </div>
+                
+                <h2 class="bd">Basic Details</h2>
+                <div class="basic-details" id="detailsContainer">
+                    <div class="details-left">
+                        <p><strong>Client Name:</strong> </p>
+                        <p><strong>Client ID:</strong> </p>
+                        <p><strong>Nominee:</strong></p>
+                        <p><strong>Refer By:</strong></p>
+                        <p><strong>Account Link:</strong> </p>
+                        <p><strong>Bank Name:</strong> </p>
+                        <p><strong>Contact Number:</strong> </p>
+                    </div>
+                    <div class="details-right">
+                        <p><strong>Agreement ID:</strong> </p>
+                        <p><strong>Capital:</strong></p>
+                        <p><strong>Start Date:</strong></p>
+                        <p><strong>Expire Date:</strong></p>
+                        <p><strong>Term:</strong> </p>
+                        <p><strong>Agreement Status:</strong> </p>
+                        <button class="download-btn">Download</button>
+                    </div>
+                </div>
 
+                <div class="transaction-details">
+                    <h3>Transaction Details</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sl No</th>
+                                <th>Transaction Date</th>
+                                <th>Days in Current Month</th>
+                                <th>Transaction Amount</th>
+                                <th>Client File</th>
+                                <th>Manager File</th>
+                                <th>Investment Start Date</th>
+                                <th>Days Invested</th>
+                                <th>Monthly Profit</th>
+                                <th>Daily Profit</th>
+                                <th>1st Month Total Profit</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionTableBody">
+                        </tbody>
+                    </table>
+                </div>
 
-   <div class="agreement-container">
-    <div class="profile-header">
-      <h2>Agreement Profile</h2>
-      <h3 id="Agreement"></h3>
-    </div>
-    <h2 class="bd">Basic Details</h2>
-    <div class="basic-details" id="detailsContainer">
-   <div class="details-left" >
-     <p><strong>Client Name:</strong> </p>
-     <p><strong>Client ID:</strong> </p>
-     <p><strong>Nominee:</strong></p>
-     <p><strong>Refer By:</strong></p>
-     <p><strong>Account Link:</strong> </p>
-     <p><strong>Bank Name:</strong> </p>
-     <p><strong>Contact Number:</strong> </p>
-   </div>
-   <div class="details-right">
-     <p><strong>Agreement ID:</strong> </p>
-     <p><strong>Capital:</strong></p>
-     <p><strong>Start Date:</strong></p>
-     <p><strong>Expire Date:</strong></p>
-     <p><strong>Term:</strong> </p>
-   
-     <p><strong>Agreement Status:</strong> </p>
-     <button class="download-btn">Download</button>
-   </div>
-
-    </div>
-    <div class="transaction-details">
-      <h3>Transaction Details</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Sl No</th>
-            <th>Transaction Date</th>
-            <th>Days in Current Month</th>
-            <th>Transaction Amount</th>
-            <th>Client File</th>
-            <th>Manager File</th>
-            <th>Investment Start Date</th>
-            <th>Days Invested</th>
-            <th>Monthly Profit</th>
-            <th>Daily Profit</th>
-            <th>1st Month Total Profit</th>
-          </tr>
-        </thead>
-        <tbody id="transactionTableBody">
-        
-        </tbody>
-      </table>
-    </div>
-  </div>
+                <div class="profit-details">
+                    <h3>Profit Details</h3>
+                    <table class="table table-bordered profit-table">
+                        <thead>
+                            <tr>
+                                <th>Sl.No</th>
+                                <th>Profit Name</th>
+                                <th>Months</th>
+                                <th>Transaction Date</th>
+                                <th>Funds</th>
+                                <th>Points</th>
+                                <th>Profit Amount</th>
+                                <th>File</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="profitTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </form>
-</body>
+        </body>
 </html>
