@@ -22,17 +22,7 @@ public partial class agreement : System.Web.UI.Page
         {
             // Initialize page if needed
         }
-        if (Request.Cookies["uploadId"] != null)
-        {
-            string uploadId = Request.Cookies["uploadId"].Value;
-            Response.Write(string.Format("Upload ID from Cookie: {0}", uploadId));
-
-            // You can use `uploadId` for any logic here, such as database queries or displaying on the page.
-        }
-        else
-        {
-            Response.Write("No upload ID found in cookies.");
-        }
+      
     }
     private static bool UploadFileToFtp(string picData, string filePath)
     {
@@ -145,15 +135,7 @@ public partial class agreement : System.Web.UI.Page
     {
         try
         {
-            HttpCookie uploadCookie = HttpContext.Current.Request.Cookies["uploadId"];
-            string uploadId = uploadCookie != null ? uploadCookie.Value : string.Empty;
-
-            // Ensure that the UploadId exists
-            if (string.IsNullOrEmpty(uploadId))
-            {
-                return "Error: Upload ID is missing in the cookies.";
-            }
-
+           
             string picFilePath = string.Empty;
 
             // Check if Pic and Path are provided
@@ -207,8 +189,8 @@ public partial class agreement : System.Web.UI.Page
                     cmd.Parameters.AddWithValue("@ClientReceiptpath", picFilePath ?? string.Empty);
                     cmd.Parameters.AddWithValue("@IFSC", formData.IFSC ?? string.Empty);
                     cmd.Parameters.AddWithValue("@profit", formData.calculatedProfit ?? string.Empty);
-                   
-                    cmd.Parameters.AddWithValue("@UploadId", uploadId);
+                    cmd.Parameters.AddWithValue("@UploadId", formData.UploadId ?? string.Empty);
+                
 
                     con.Open();
                     cmd.ExecuteNonQuery();
@@ -220,7 +202,7 @@ public partial class agreement : System.Web.UI.Page
 
                 using (SqlCommand updateCmd = new SqlCommand(updateQuery, con))
                 {
-                    updateCmd.Parameters.AddWithValue("@UploadId", uploadId); // Bind the UploadId parameter
+                    updateCmd.Parameters.AddWithValue("@UploadId", formData.UploadId ?? string.Empty);
                     int rowsAffected = updateCmd.ExecuteNonQuery();
 
                     if (rowsAffected == 0)

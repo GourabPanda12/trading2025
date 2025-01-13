@@ -226,9 +226,11 @@
                 $('#TransactionAmount').val(clientData.Amount); // Auto-fill Transaction Amount
                 $('#refer').val(clientData.ReferBy); // Auto-fill Refer By
                 $('#ClientReceipt').val(clientData.MyDocPath); // Auto-fill Client Receipt Path
+                $('#UploadId').val(clientData.UploadId); // Auto-fill Upload ID
             } else {
                 console.error('No client data found in localStorage.');
             }
+
 
 
 
@@ -321,10 +323,10 @@
                     pic: $("#hiden").val(),
                     path: $("#hidden").val(),
                     ifsc: $("#IFSC").val(),
-                    calculatedProfit: $("#calculatedProfit").val()
+                    calculatedProfit: $("#calculatedProfit").val(),
+                    UploadId: $("#UploadId").val()
                 };
-
-                // Log formData to confirm JSON structure
+              
                 console.log(formData);
 
                 // First AJAX request to save the main data
@@ -633,7 +635,9 @@
                                     </div>
 
 
-                                    
+<input type="text" id="UploadId" style="display:none;" />
+
+
 
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">Current Transaction Start::</label>
