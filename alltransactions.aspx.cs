@@ -111,8 +111,7 @@ WHERE
     }
 
 
-
-    [System.Web.Services.WebMethod]
+ [System.Web.Services.WebMethod]
     public static string GetClientName(string clientId)
     {
         String connectionString = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
@@ -132,6 +131,7 @@ WHERE
 
         return clientName;
     }
+   
 
 
 }
