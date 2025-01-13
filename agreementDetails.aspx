@@ -156,6 +156,17 @@
 
       <script>
           $(document).ready(function () {
+
+              $("#withdrawbtn").click(function () {
+                  console.log("Withdraw button clicked");
+                  $("#withdrawModal").modal('show'); // Ensure modal opens
+              });
+
+
+
+
+
+
               $('.btn-download').on('click', function () {
                   alert('Download functionality coming soon!');
               });
@@ -375,6 +386,78 @@
                         </tbody>
                     </table>
                 </div>
+
+
+
+
+
+                <div class="Withdrawl-details">
+                    <h3>Withdrawl Details</h3>
+                    <span>
+                        <button type="button" class="btn btn-success" id="withdrawbtn" data-toggle="modal" data-target="#withdrawModal">Withdraw Capital</button></span>
+                    <table class="table table-bordered withdraw-table">
+                        <thead>
+                            <tr>
+                                <th>Sl.No</th>
+                                <th>Transaction Date</th>
+                                <th>Withdraw Amount</th>
+                                <th>Active Fund</th>
+                                <th>File</th>
+                                <th>Note</th>
+
+                            </tr>
+                        </thead>
+                        <tbody id="withdrawlTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+<div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="withdrawModalLabel">Withdraw Capital</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="enterDate" class="form-label">Enter Date:</label>
+                        <input type="date" class="form-control" id="enterDate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="enterAmount" class="form-label">Enter Amount:</label>
+                        <input type="number" class="form-control" id="enterAmount">
+                    </div>
+                    <div class="mb-3">
+                        <label for="activeFund" class="form-label">Active Fund:</label>
+                        <input type="text" class="form-control" id="activeFund" placeholder="Auto calculate from capital" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="uploadFile" class="form-label">Upload File:</label>
+                        <input type="file" class="form-control" id="uploadFile">
+                    </div>
+                    <div class="mb-3">
+                        <label for="note" class="form-label">Note:</label>
+                        <textarea class="form-control" id="note" placeholder="Please enter description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button> <!-- Cancel Button -->
+                <button type="button" class="btn btn-danger" id="withdrawSubmit">Withdraw</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
             </div>
         </div>
     </form>
