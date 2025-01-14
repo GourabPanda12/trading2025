@@ -152,6 +152,57 @@
             color: #ffc107;
             text-decoration: none;
         }
+
+          .capital-header {
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            padding: 15px;
+            border-radius: 5px 5px 0 0;
+            border: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .table-container {
+            border: 1px solid #dee2e6;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .table > :not(caption) > * > * {
+            padding: 12px 15px;
+        }
+        .table > thead {
+            background-color: #212529;
+            color: white;
+        }
+        .download-link {
+            color: #0d6efd;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .status-link {
+            color: #dc3545;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .note-link {
+            color: #ffc107;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+          .withdrawal-header {
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .withdrawal-header h3 {
+            margin-bottom: 0;
+            font-size: 1.25rem;
+        }
     </style>
 
       <script>
@@ -163,6 +214,16 @@
               });
 
 
+              $("#Returnbtn").click(function () {
+                  console.log("Withdraw button clicked");
+                  $("#capitalReturnModal").modal('show'); // Ensure modal opens
+              });
+
+
+              $("#Reinvestbtn").click(function () {
+                  console.log("Withdraw button clicked");
+                  $("#capitalReinvestModal").modal('show'); // Ensure modal opens
+              });
 
 
 
@@ -314,6 +375,7 @@
     <body>
  <form id="form1">
         <div>
+             <ucx1:MyUserControl11 runat="server" />
             <div class="agreement-container">
                 <div class="profile-header">
                     <h2>Agreement Profile</h2>
@@ -392,9 +454,14 @@
 
 
                 <div class="Withdrawl-details">
-                    <h3>Withdrawl Details</h3>
-                    <span>
-                        <button type="button" class="btn btn-success" id="withdrawbtn" data-toggle="modal" data-target="#withdrawModal">Withdraw Capital</button></span>
+                  <div class="withdrawal-header">
+            <h3>Withdrawal Details</h3>
+            <div>
+                <button type="button" class="btn btn-success" id="withdrawbtn" data-bs-toggle="modal" data-bs-target="#withdrawModal">
+                    Withdraw Capital
+                </button>
+            </div>
+        </div>
                     <table class="table table-bordered withdraw-table">
                         <thead>
                             <tr>
@@ -457,6 +524,141 @@
 </div>
 
 
+
+
+
+                <div class="container mt-4">
+        <div class="capital-header">
+            <h5 class="mb-0">Capital Return</h5>
+            <div>
+<button class="btn btn-success me-2" type="button" id="Reinvestbtn" data-bs-toggle="modal" data-bs-target="#capitalReinvestModal">
+    Reinvest
+</button>
+                <button type="button" id="Returnbtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#capitalReturnModal">Capital Return</button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Sl No</th>
+                        <th>Transaction Date</th>
+                        <th>Amount</th>
+                        <th>File</th>
+                        <th>Status</th>
+                        <th>Note</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+                
+<!-- Modal Structure -->
+<div class="modal fade" id="capitalReturnModal" tabindex="-1" aria-labelledby="capitalReturnModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="capitalReturnModalLabel">Capital Return</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <!-- Expire Field -->
+        <div class="mb-3">
+          <label for="expireField" class="form-label">Expire:</label>
+          <input type="text" id="expireField" class="form-control" placeholder="Auto Fetch From Form" readonly>
+        </div>
+
+        <!-- Active Amount Field -->
+        <div class="mb-3">
+          <label for="activeAmountField" class="form-label">Active Amount:</label>
+          <input type="text" id="activeAmountField" class="form-control" placeholder="Enter Amount">
+        </div>
+
+        <!-- File Upload -->
+        <div class="mb-3">
+          <label for="uploadFile" class="form-label">Upload File:</label>
+          <input type="file" id="uploadFile" class="form-control">
+          <button class="btn btn-dark mt-2">Upload Amount</button>
+        </div>
+
+        <!-- Message -->
+        <div class="mb-3">
+          <label for="messageField" class="form-label">Message*:</label>
+          <textarea id="messageField" class="form-control" rows="4" readonly>Dear Client, today one of our agreements is expired.
+          
+Thank you,
+D Market Analyst
+8247653214</textarea>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button class="btn btn-danger w-100">Close Agreement</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+                <div class="modal fade" id="capitalReinvestModal" tabindex="-1" aria-labelledby="capitalReinvestModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="capitalReinvestModalLabel">Capital Reinvest</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="clientName" class="form-label">Client Name</label>
+                        <input type="text" id="clientName" class="form-control" placeholder="Auto Fetch" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clientId" class="form-label">Client ID</label>
+                        <input type="text" id="clientId" class="form-control" placeholder="Auto Fetch" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="transactionDate" class="form-label">Transaction Date</label>
+                        <input type="date" id="transactionDate" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="enterAmount" class="form-label">Enter Amount</label>
+                        <input type="number" id="enterAmount" class="form-control" placeholder="Enter Amount">
+                    </div>
+                    <div class="mb-3">
+                        <label for="uploadFile" class="form-label">Upload File</label>
+                        <input type="file" id="uploadFile" class="form-control">
+                    </div>
+                    <p class="text-danger">* Upload capital receipt from previous agreement</p>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea id="message" class="form-control" rows="4">
+Dear Client, today one of our agreements is expired. However, due to our conversation on call, we mutually agreed that I will not send the investment amount; it will be reinvested.
+
+Thank you,
+D Market Analyst
+8247653214
+                        </textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success">Reinvest</button>
+            </div>
+        </div>
+    </div>
+</div>
 
             </div>
         </div>

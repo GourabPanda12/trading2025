@@ -268,17 +268,16 @@
             // Fetch data when the page loads
             $.ajax({
                 type: "POST",
-                url: "monthlyprofit.aspx/Getmonthlyprofit", // WebMethod URL
+                url: "monthlyprofit.aspx/Getmonthlyprofit",
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                data: JSON.stringify({ search: "" }), // Empty search query for initial load
+                data: JSON.stringify({ search: "" }),
                 success: function (response) {
-                    var data = response.d; // Deserialize response data
+                    var data = response.d;
                     var tableBody = $("#data-table tbody");
-                    tableBody.empty(); // Clear existing rows
+                    tableBody.empty();
 
                     if (Array.isArray(data) && data.length > 0) {
-                        // Iterate through the data and append rows to the table
                         $.each(data, function (index, item) {
                             var row = `
                         <tr>
@@ -295,7 +294,8 @@
                             <td>
                                 <button type="button" 
                                         class="expand-btn btn btn-sm btn-info" 
-                                        data-term="${item.Term}">
+                                        data-term="${item.Term}"
+                                        data-start-date="${item.StartDate}">
                                     <i class="fas fa-chevron-down"></i>
                                 </button>
                             </td>
@@ -315,46 +315,93 @@
             $(document).on("click", ".expand-btn", function () {
                 var $button = $(this);
                 var $row = $button.closest("tr");
+                var term = parseInt($button.data("term"));
+                var startDate = new Date($button.data("start-date"));
 
                 if ($row.next().hasClass("expandable-row")) {
                     $row.next().toggle();
                 } else {
-                    var payments = [
-                        { date: "3rd Jan 2025", amount: "9,032.26", status: "Paid" },
-                        { date: "3rd Feb 2025", amount: "12,000.00", status: "Pending" },
-                        { date: "3rd Mar 2025", amount: "12,000.00", status: "Pending" }
-                    ];
-
+                    // Generate payment sections based on term
+                    var payments = generatePaymentDates(startDate, term);
                     var paymentElements = payments.map(payment => `
-                        <div class="payment-status-container">
-                            <div class="payment-date">${payment.date}</div>
-                            <div class="payment-amount">₹ ${payment.amount}</div>
-                            <button class="upload-file-btn">
-                                <i class="fas fa-upload"></i> Upload File
-                            </button>
-                            <div class="status-indicator status-${payment.status.toLowerCase()}">
-                                ${payment.status}
-                            </div>
-                            <button class="profile-btn">
-                                Go To Profile
-                            </button>
-                        </div>
-                    `).join('');
+                <div class="payment-status-container">
+                    <div class="payment-date">${payment.date}</div>
+                    <div class="payment-amount">₹ ${payment.amount}</div>
+                    <button class="upload-file-btn">
+                        <i class="fas fa-upload"></i> Upload File
+                    </button>
+                    <div class="status-indicator status-${payment.status.toLowerCase()}">
+                        ${payment.status}
+                    </div>
+                    <button class="profile-btn">
+                        Go To Profile
+                    </button>
+                </div>
+            `).join('');
 
                     var expandableRow = `
-                        <tr class="expandable-row">
-                            <td colspan="11">
-                                <div class="expandable-content">
-                                    ${paymentElements}
-                                </div>
-                            </td>
-                        </tr>`;
+                <tr class="expandable-row">
+                    <td colspan="11">
+                        <div class="expandable-content">
+                            ${paymentElements}
+                        </div>
+                    </td>
+                </tr>`;
 
                     $row.after(expandableRow);
                 }
-            });        });
 
+                // Toggle the arrow icon
+                $button.find('i').toggleClass('fa-chevron-down fa-chevron-up');
+            });
+        });
 
+        // Function to generate payment dates based on term
+        function generatePaymentDates(startDate, term) {
+            let payments = [];
+            let currentDate = new Date(startDate);
+
+            for (let i = 0; i < term; i++) {
+                // Add one month to the date
+                currentDate.setMonth(currentDate.getMonth() + 1);
+
+                // Format the date
+                let formattedDate = formatDate(currentDate);
+
+                // Add payment object
+                payments.push({
+                    date: formattedDate,
+                    amount: "12,000.00",
+                    status: i === 0 ? "Paid" : "Pending" // First payment is Paid, rest are Pending
+                });
+            }
+
+            return payments;
+        }
+
+        // Function to format date as "3rd Jan 2025"
+        function formatDate(date) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const day = date.getDate();
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+
+            // Add ordinal suffix to day
+            const suffix = getDaySuffix(day);
+
+            return `${day}${suffix} ${month} ${year}`;
+        }
+
+        // Function to get day suffix (st, nd, rd, th)
+        function getDaySuffix(day) {
+            if (day > 3 && day < 21) return 'th';
+            switch (day % 10) {
+                case 1: return "st";
+                case 2: return "nd";
+                case 3: return "rd";
+                default: return "th";
+            }
+        }
     </script>
 
 
@@ -410,17 +457,6 @@
             <tbody>
             </tbody>
         </table>
-    </div>
-
-    <div class="pagination">
-        <div class="pagination-info">
-            Showing 1 to 10 of 130 entries
-        </div>
-        <div class="pagination-controls">
-            <button>1</button>
-            <button>2</button>
-            <button><i class="fas fa-chevron-right"></i></button>
-        </div>
     </div>
 
 </body>

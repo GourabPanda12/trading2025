@@ -31,11 +31,35 @@ public partial class monthlyprofit : System.Web.UI.Page
 
         string connString = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
 
-        string query = @"SELECT  [AgreementID], [ClientName], [TotalFund], [Term], 
-                                [Priority], [StartDate], [expireDate], [Accountlink], 
-                                [refer] AS ReferBy  
-                         FROM 
-                               [tradedata].[tradeadmin].[aggrement]";
+        string query = @"  WITH CTE AS (
+    SELECT 
+        [AgreementID], 
+        [ClientName], 
+        [TotalFund], 
+        [Term], 
+        [Priority], 
+        [StartDate], 
+        [expireDate], 
+        [Accountlink], 
+        [refer] AS ReferBy,
+        ROW_NUMBER() OVER (PARTITION BY [AgreementID] ORDER BY [tid] DESC) AS RowNum
+    FROM 
+        [tradedata].[tradeadmin].[aggrement]
+)
+SELECT 
+    [AgreementID], 
+    [ClientName], 
+    [TotalFund], 
+    [Term], 
+    [Priority], 
+    [StartDate], 
+    [expireDate], 
+    [Accountlink], 
+    ReferBy
+FROM 
+    CTE
+WHERE 
+    RowNum = 1;";
 
         using (SqlConnection con = new SqlConnection(connString))
         {
