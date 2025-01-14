@@ -2,7 +2,6 @@
 <%@ Register TagPrefix="ucx1" TagName="MyUserControl11" Src="~/sidenav2.ascx" %>
 <%@ Register TagPrefix="ucx" TagName="MyUserControl1" Src="~/header.ascx" %>
 
-
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -11,173 +10,259 @@
 
     <ucx:MyUserControl1 runat="server" />
 
-  <style>
+    <style>
+       <style>
     body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f3f6fa;
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f3f6fa;
+        color: #333;
     }
 
-.dashboard {
-    width: 90%;
-    margin: 0 auto;
-    display: flex;
-    gap: 15px;
-    margin-top: 90px;
-    margin-left: 95px;
-}
-.section {
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    padding: 5px 10px;
-    margin: 15px 0;
-    border-radius: 15px;
-    background-color: #daeaf3;
-}
-    .left-section {
-      flex: 2;
+    .dashboard {
+        width: 90%;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 50px;
     }
 
-    .right-section {
-      flex: 1;
+    .section {
+        flex: 1 1 calc(30% - 20px);
+        box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 6px;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #ffffff;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    h2 {
-      color: #333;
-      margin-bottom: 15px;
-      font-size: 1.5rem;
-      border-left: 5px solid #087a9f;
-      padding-left: 10px;
-        font-size: 25px !important;
-        font-weight: 600 !important;
-        color: #373737 !important;
-        padding: 5px !important;
+    .section:hover {
+        transform: translateY(-5px);
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 12px;
     }
 
-.card-container {
-    display: flex
-;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
-}
+    .section h2 {
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+        color: #087a9f;
+        text-transform: uppercase;
+    }
+
+    .card-container {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+    }
 
     .card {
-      flex: 1;
-      max-width: 300px;
-      padding: 10px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      color: white;
-      transition: transform 0.2s, box-shadow 0.2s;
+        flex: 1;
+        padding: 15px;
+        border-radius: 8px;
+        color: #ffffff;
+        text-align: center;
+        transition: transform 0.3s ease;
     }
 
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        transform: scale(1.05);
     }
 
     .card.blue {
-      background-color: #087a9f;
+        background-color: #087a9f;
     }
 
     .card.green {
-      background-color: #28a745;
+        background-color: #28a745;
     }
 
     .card.red {
-      background-color: #dc3545;
+        background-color: #dc3545;
     }
 
-.card p {
-    margin: 6px 0;
-    color: #fff;
-}
+    .card p.amount {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin: 5px 0;
+    }
 
-.card .amount {
-    font-size: 20px;
-    font-weight: bold;
-    margin: 0;
-    color: #fff;
-}
-
-.card button {
-    padding: 5px 15px;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    background-color: #1f309b;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 80%;
-    margin: 0 auto;
-    margin-top: 10px;
-}
+    .card button {
+        margin-top: 10px;
+        padding: 8px 15px;
+        background-color: #ffffff;
+        color: inherit;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.3s ease;
+    }
 
     .card button:hover {
-      background-color: #071257;
+        background-color: rgba(255, 255, 255, 0.8);
     }
 
-.right-section {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 14px;
-}
+    .right-section {
+        flex: 1 1 calc(70% - 20px);
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 6px;
+        overflow-x: auto;
+    }
+
+    .right-section h2 {
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+        color: #087a9f;
+        text-transform: uppercase;
+        border-bottom: 2px solid #087a9f;
+        display: inline-block;
+        padding-bottom: 5px;
+    }
 
     table {
-      width: 100%;
-      border-collapse: collapse;
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
     }
 
     table th,
     table td {
-      padding: 12px 10px;
-      text-align: center;
-      font-size: 0.9rem;
-      color: #555;
+        padding: 12px 15px;
+        text-align: center;
+        font-size: 0.9rem;
+        border: 1px solid #ddd;
     }
 
     table th {
-      background-color: #087a9f;
-      color: white;
-      border: 1px solid #ddd;
+        background-color: #087a9f;
+        color: white;
+        text-transform: uppercase;
+        font-size: 0.95rem;
     }
 
     table tr:nth-child(even) {
-      background-color: #f9f9f9;
+        background-color: #f9f9f9;
     }
 
     table tr:hover {
-      background-color: #f1f1f1;
+        background-color: #f1f1f1;
+    }
+
+    table td {
+        font-size: 0.9rem;
+        color: #555;
     }
 
     .upload-btn {
-      background-color: #087a9f;
-      padding: 6px 12px;
-      border-radius: 4px;
-      color: white;
-      font-size: 0.9rem;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
+        background-color: #087a9f;
+        padding: 8px 15px;
+        border-radius: 4px;
+        color: white;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
     }
 
     .upload-btn:hover {
-      background-color: #005f75;
+        background-color: #005f75;
+        transform: scale(1.05);
     }
-  </style>
 
+    .card-container {
+    display: flex;
+    gap: 112px;
+    justify-content: space-between;
+}
+
+    .left-section {
+    width: 100%;
+}
+</style>
+
+   
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Fetch data using an AJAX call
+            fetch("fund.aspx/GetAgreementData", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8"
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector("#data-table tbody");
+                    tableBody.innerHTML = ""; // Clear existing rows
+
+                    // Iterate through the data and append rows to the table
+                    data.d.forEach((item, index) => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${item.TID}</td>
+                            <td>${item.ClientName}</td>
+                            <td>${item.Capital}</td>
+                            <td>${item.Term}</td>
+                            <td>${item.RefBy}</td>
+                            <td class="ClientReceiptx"><input type="file"></td>
+                            <td><button id="" class="upload-btn">Upload</button></td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error("Error fetching data:", error));
+
+
+            $('.btn-upload').on('click', function () {
+                $(this).next('.file-input').trigger('click'); // Opens the file input dialog
+            });
+
+            $('.file-input').on('change', function () {
+                const fileInput = $(this);
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const base64Data = e.target.result;
+                        const fileName = file.name;
+
+                        // Update the hidden fields within the same row
+                        fileInput.siblings('.hidden-base64').val(base64Data);   // Set base64 data
+                        fileInput.siblings('.hidden-filename').val(fileName);    // Set file name
+                    };
+                    reader.readAsDataURL(file); // Read file as base64
+                }
+            });
+
+
+
+
+
+        });
+    </script>
 </head>
 <body>
     <form id="form1" runat="server">
-        
         <div>
            <ucx1:MyUserControl11 runat="server" />
+        </div>
 
-                     
+        <table>
+    <tr>
+        <td class="ClientReceiptx">
+            <input type="file" class="file-input">
+            <input type="hidden" value="" class="hidden-base64" runat="server">
+            <input type="hidden" value="" class="hidden-filename" runat="server">
+        </td>
+    </tr>
+    <!-- Repeat rows as needed -->
+</table>
 
 
   <div class="dashboard">
@@ -250,226 +335,29 @@
       </div>
     </div>
 
-    <!-- Right Section -->
-<div class="right-section">
-  <h2>Pending Agreements</h2>
-  <table id="data-table" class="display">
-    <thead>
-      <tr>
-        <th>Sl No</th>
-        <th>Ag ID</th>
-        <th>Client Name</th>
-        <th>Capital</th>
-        <th>Term</th>
-        <th>Ref By</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>1</td>
-        <td>AG8544</td>
-        <td>ABC Wgr</td>
-        <td>200,000.00</td>
-        <td>0</td>
-        <td>Danish</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>AG6002</td>
-        <td>MBV Huy</td>
-        <td>100,000.00</td>
-        <td>6</td>
-        <td>Mirza</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>AG7501</td>
-        <td>Xavier Ltd</td>
-        <td>500,000.00</td>
-        <td>12</td>
-        <td>Ramesh</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>4</td>
-        <td>AG3007</td>
-        <td>TechSolve</td>
-        <td>350,000.00</td>
-        <td>18</td>
-        <td>Sara</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>5</td>
-        <td>AG1105</td>
-        <td>GreenTech</td>
-        <td>275,000.00</td>
-        <td>24</td>
-        <td>Ali</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>6</td>
-        <td>AG2021</td>
-        <td>NextGen Corp</td>
-        <td>420,000.00</td>
-        <td>36</td>
-        <td>Meera</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>7</td>
-        <td>AG8450</td>
-        <td>Prime Solutions</td>
-        <td>180,000.00</td>
-        <td>12</td>
-        <td>Ankit</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>8</td>
-        <td>AG9503</td>
-        <td>Infinity Co.</td>
-        <td>600,000.00</td>
-        <td>60</td>
-        <td>Priya</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>9</td>
-        <td>AG4009</td>
-        <td>EcoBuild</td>
-        <td>220,000.00</td>
-        <td>24</td>
-        <td>Ravi</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>10</td>
-        <td>AG7070</td>
-        <td>SoftTech</td>
-        <td>320,000.00</td>
-        <td>48</td>
-        <td>Sameer</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>11</td>
-        <td>AG6061</td>
-        <td>Vibrant Systems</td>
-        <td>450,000.00</td>
-        <td>18</td>
-        <td>Aisha</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>12</td>
-        <td>AG5055</td>
-        <td>RapidTech</td>
-        <td>380,000.00</td>
-        <td>30</td>
-        <td>Kumar</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>13</td>
-        <td>AG4802</td>
-        <td>CloudNet</td>
-        <td>410,000.00</td>
-        <td>36</td>
-        <td>Jaya</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>14</td>
-        <td>AG9802</td>
-        <td>Bright Minds</td>
-        <td>510,000.00</td>
-        <td>24</td>
-        <td>Fahad</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>15</td>
-        <td>AG7710</td>
-        <td>Elite Systems</td>
-        <td>290,000.00</td>
-        <td>12</td>
-        <td>Geeta</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>16</td>
-        <td>AG8803</td>
-        <td>Optima Tech</td>
-        <td>375,000.00</td>
-        <td>48</td>
-        <td>Rahul</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>17</td>
-        <td>AG9104</td>
-        <td>Unified Co.</td>
-        <td>650,000.00</td>
-        <td>36</td>
-        <td>Amit</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>18</td>
-        <td>AG4120</td>
-        <td>Global View</td>
-        <td>310,000.00</td>
-        <td>24</td>
-        <td>Neha</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>19</td>
-        <td>AG6505</td>
-        <td>TechEra</td>
-        <td>450,000.00</td>
-        <td>30</td>
-        <td>Sunil</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-      <tr>
-        <td>20</td>
-        <td>AG8506</td>
-        <td>VisionWorks</td>
-        <td>500,000.00</td>
-        <td>12</td>
-        <td>Nisha</td>
-        <td><button class="upload-btn">Upload</button></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-  </div>
-
-
-
-                </div>
+        <div class="dashboard">
+            <!-- Right Section -->
+            <div class="right-section">
+                <h2>Pending Agreements</h2>
+                <table id="data-table">
+                    <thead>
+                        <tr>
+                            <th>Sl No</th>
+                            <th>T ID</th> <!-- Hidden with CSS -->
+                            <th>Client Name</th>
+                            <th>Capital</th>
+                            <th>Term</th>
+                            <th>Ref By</th>
+                            <th>Document</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                       
+                    </tbody>
+                </table>
             </div>
-
-
         </div>
     </form>
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script>
-      $(document).ready(function () {
-          $('#data-table').DataTable({
-              pageLength: 8,
-              lengthChange: false,
-              searching: false,
-              info: false
-          });
-      });
-  </script>
 </body>
 </html>
