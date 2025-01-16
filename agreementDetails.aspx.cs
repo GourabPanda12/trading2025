@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.Services;
@@ -11,6 +13,10 @@ using System.Web.UI.WebControls;
 
 public partial class agreementDetails : System.Web.UI.Page
 {
+    private const string FtpFolder = "ftp://msksoftware.co.in/httpdocs/forestdoc/";
+    private const string FtpUsername = "mskuser";
+    private const string FtpPassword = "Swadhin@#12";
+
     protected void Page_Load(object sender, EventArgs e)
     {
 
@@ -169,6 +175,131 @@ public partial class agreementDetails : System.Web.UI.Page
         public string StartDate { get; set; }
 
     }
+    private static bool UploadFileToFtp(string base64Data, string fileName)
+    {
+        if (string.IsNullOrEmpty(base64Data) || string.IsNullOrEmpty(fileName))
+        {
+            return false;
+        }
 
+        try
+        {
+            string[] dataParts = base64Data.Split(',');
+            if (dataParts.Length < 2)
+            {
+                return false;
+            }
 
+            byte[] fileBytes = Convert.FromBase64String(dataParts[1]);
+
+            string fullPath = FtpFolder + fileName;
+            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(fullPath);
+            request.Method = WebRequestMethods.Ftp.UploadFile;
+            request.Credentials = new NetworkCredential(FtpUsername, FtpPassword);
+            request.ContentLength = fileBytes.Length;
+            request.UsePassive = true;
+            request.UseBinary = true;
+            request.ServicePoint.ConnectionLimit = fileBytes.Length;
+            request.EnableSsl = false;
+
+            using (Stream requestStream = request.GetRequestStream())
+            {
+                requestStream.Write(fileBytes, 0, fileBytes.Length);
+            }
+
+            using (FtpWebResponse response = (FtpWebResponse)request.GetResponse())
+            {
+                return response.StatusCode == FtpStatusCode.ClosingData;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("FTP upload failed: " + ex.Message);
+            return false;
+        }
+    }
+
+    [WebMethod]
+    public static string SaveModalData(data data)
+    {
+        try
+        {
+            // Validate input data
+            if (string.IsNullOrEmpty(data.agreementId))
+            {
+                return "Error: AgreementId is required.";
+            }
+
+            // Prepare file path for the database
+            string filePathInDatabase = null;
+
+            // Handle file upload if Base64 data is provided
+            if (!string.IsNullOrEmpty(data.fileData) && !string.IsNullOrEmpty(data.fileName))
+            {
+                // Upload file to FTP server
+                bool isUploaded = UploadFileToFtp(data.fileData, data.fileName);
+                if (isUploaded)
+                {
+                    filePathInDatabase = string.Format("https://msksoftware.co.in/forestdoc/{0}", data.fileName);
+                }
+                else
+                {
+                    return "Error: Failed to upload file.";
+                }
+            }
+
+            // Save form data to the database
+            string connString = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(connString))
+            {
+                const string query = @"
+            INSERT INTO [tradedata].[tradeadmin].[FundManagement]
+            ([AgreementId], [WithdrawalAmount], [WithdrawalDate], [ActiveFund], [note], [pic], [Status])
+            VALUES (@AgreementId, @WithdrawalAmount, @WithdrawalDate, @ActiveFund, @Note, @Pic, 'W')";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    // Map parameters to table columns
+                    cmd.Parameters.AddWithValue("@AgreementId", data.agreementId);
+                    cmd.Parameters.AddWithValue("@WithdrawalAmount", data.WithdrawalAmount);
+                    cmd.Parameters.AddWithValue("@WithdrawalDate", Convert.ToDateTime(data.WithdrawalDate));
+                    cmd.Parameters.AddWithValue("@ActiveFund", data.activeFund);
+                    cmd.Parameters.AddWithValue("@Pic", filePathInDatabase ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Note", data.note ?? (object)DBNull.Value);
+
+                    con.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+                        return "Success";
+                    }
+                    else
+                    {
+                        return "Error: No rows were affected.";
+                    }
+                }
+            }
+        }
+        catch (SqlException sqlEx)
+        {
+            System.Diagnostics.Debug.WriteLine("SQL Error: " + sqlEx.Message);
+            return "Error: Database operation failed.";
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("Error: " + ex.Message);
+            return string.Format("Error: {0}", ex.Message);
+        }
+    }
+
+    public class data
+    {
+        public string agreementId { get; set; }
+        public decimal WithdrawalAmount { get; set; }
+        public string WithdrawalDate { get; set; }
+        public decimal activeFund { get; set; }
+        public string fileData { get; set; }
+        public string fileName { get; set; }
+        public string note { get; set; }    
+    }
 }
