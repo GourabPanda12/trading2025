@@ -302,4 +302,105 @@ public partial class agreementDetails : System.Web.UI.Page
         public string fileName { get; set; }
         public string note { get; set; }    
     }
+
+    [WebMethod]
+   
+    public static decimal GetActiveFund(string agreementId)
+    {
+        try
+        {
+            string connString = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(connString))
+            {
+                const string query = "SELECT ActiveFund FROM [tradedata].[tradeadmin].[FundManagement] WHERE AgreementId = @AgreementId";
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@AgreementId", agreementId);
+                    con.Open();
+                    object result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        return Convert.ToDecimal(result); // Return ActiveFund value
+                    }
+                    else
+                    {
+                        return 0; // Return 0 if no record is found
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("Error fetching active fund: " + ex.Message);
+            throw new Exception("Error fetching active fund.");
+        }
+    }
+
+    [WebMethod]
+   
+    public static object GetClientData()
+    {
+        try
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["tradedata"].ConnectionString;
+            List<object> clientData = new List<object>();
+
+            string query = @"
+            SELECT 
+                [WithdrawalDate],
+                [WithdrawalAmount],
+                [ActiveFund],
+                [pic],
+                [note]
+            FROM [tradedata].[tradeadmin].[FundManagement]";
+
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            clientData.Add(new
+                            {
+                                TransactionDate = reader["WithdrawalDate"] != DBNull.Value
+                                                  ? Convert.ToDateTime(reader["WithdrawalDate"]).ToString("yyyy-MM-dd")
+                                                  : string.Empty,
+                                WithdrawAmount = reader["WithdrawalAmount"] != DBNull.Value
+                                                 ? Convert.ToDecimal(reader["WithdrawalAmount"])
+                                                 : 0m,
+                                ActiveFund = reader["ActiveFund"] != DBNull.Value
+                                             ? Convert.ToDecimal(reader["ActiveFund"])
+                                             : 0m,
+                                File = reader["pic"] != DBNull.Value
+                                      ? reader["pic"].ToString()
+                                      : string.Empty,
+                                Note = reader["note"] != DBNull.Value
+                                      ? reader["note"].ToString()
+                                      : string.Empty
+                            });
+                        }
+                    }
+                }
+            }
+
+            return new
+            {
+                data = clientData
+            };
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("Error fetching data: " + ex.Message);
+            return new
+            {
+                error = true,
+                message = "Error fetching data: " + ex.Message
+            };
+        }
+    }
+
+
 }

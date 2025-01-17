@@ -207,6 +207,35 @@
 
       <script>
           $(document).ready(function () {
+              let activefund = 0;
+              const urlParams = new URLSearchParams(window.location.search);
+              const agreementId = urlParams.get('AgreementID'); // Ensure AgreementID exists in the URL
+              if (!agreementId) {
+                  console.error("AgreementID is missing in the URL.");
+                  alert("Agreement ID is required.");
+                  return;
+              }
+
+              $.ajax({
+                  url: 'agreementDetails.aspx/GetActiveFund',
+                  method: 'POST',
+                  contentType: 'application/json; charset=utf-8',
+                  data: JSON.stringify({ agreementId: agreementId }),
+                  success: function (response) {
+                      console.log("Full Response:", response); // Log the entire response
+                       activefund = response.d;
+                      if (activefund !== undefined && activefund !== null) {
+                          console.log("Active Fund Value:", activefund);
+                      } else {
+                          console.error("Active fund value is missing in the response.");
+                      }
+                  },
+                  error: function (xhr, status, error) {
+                      console.error('Error:', error);
+                      alert('Failed to save data.');
+                  }
+              });
+
 
               $("#withdrawbtn").click(function () {
                   console.log("Withdraw button clicked");
@@ -245,8 +274,8 @@
 
                           // Map each file input to its respective hidden fields for base64 data and file name
                           if (inputId === 'reinvestmodalx') {
-                              $('#hiden').val(base64Data);   // base64 data for ClientReceipt
-                              $('#hidden').val(fileName);    // file name for ClientReceipt
+                              $('#hidden1').val(base64Data);   // base64 data for ClientReceipt
+                              $('#hidden2').val(fileName);    // file name for ClientReceipt
 
                           }
                       };
@@ -263,8 +292,8 @@
                       data: JSON.stringify({
                           ClientId: $("#clientId").val(), // Use ClientId from the client object
                           Amount: $("#amount").val(),
-                          pic: $("#hiden").val(),
-                          path: $("#hidden").val(),
+                          pic: $("#hidden1").val(),
+                          path: $("#hidden2").val(),
                           message: $("#message").val(),
                       }),
                       contentType: "application/json; charset=utf-8",
@@ -287,9 +316,7 @@
                   alert('Download functionality coming soon!');
               });
 
-              const urlParams = new URLSearchParams(window.location.search);
-              const agreementId = urlParams.get('AgreementID');
-              console.log("Selected AgreementID:", agreementId);
+             
 
               $("#Agreement").text(`Agreement ID: ${agreementId}`);
 
@@ -430,69 +457,156 @@
                   $(this).next('.file-input').trigger('click'); // Opens the file input dialog
               });
               $('.file-input').on('change', function () {
-                  const inputId = $(this).attr('id');
                   const file = this.files[0];
                   if (file) {
                       const reader = new FileReader();
                       reader.onload = function (e) {
-                          const base64Data = e.target.result;
-                          const fileName = file.name;
-
-                          // Map each file input to its respective hidden fields for base64 data and file name
-                          if (inputId === 'uploadFilex') {
-                              $('#hiden').val(base64Data);   // base64 data for ClientReceipt
-                              $('#hidden').val(fileName);    // file name for ClientReceipt
-
-                          }
+                          $('#hiden').val(e.target.result); // Store Base64 data
+                          $('#hidden').val(file.name); // Store file name
                       };
-                      reader.readAsDataURL(file); // Read file as base64
+                      reader.readAsDataURL(file); // Read the file
+                  } else {
+                      console.error("No file selected.");
                   }
               });
 
               // Handle form submission on button click
-              $('#withdrawSubmit').on('click', function () {
-                  // Collect form data
-                  const modalData = {
-                      WithdrawalDate: $('#enterDate').val(),
-                      WithdrawalAmount: $('#enterAmountx').val(),
-                      activeFund: $('#activeFund').val(),
-                      note: $('#note').val(),
-                      fileData: $('#hiden').val(), // Base64 file data
-                      fileName: $('#hidden').val(), // File name
-                      agreementId: agreementId
-                  };
+              $(document).ready(function () {
+                  let activefund = 0; // Initialize active fund variable
 
-                  console.log(modalData);
-
-                  // Validate form data
-                  if (!modalData.WithdrawalDate || !modalData.WithdrawalAmount) {
-                      alert('Please fill out all required fields.');
-                      return;
-                  }
-
-                  // Send data to the backend
+                  // Fetch Active Fund on Page Load
                   $.ajax({
-                      url: 'agreementDetails.aspx/SaveModalData',
+                      url: 'agreementDetails.aspx/GetActiveFund',
                       method: 'POST',
                       contentType: 'application/json; charset=utf-8',
-                      data: JSON.stringify({ data: modalData }),
+                      data: JSON.stringify({ agreementId: agreementId }),
                       success: function (response) {
-                          alert(response.d); // Show backend response
-                          // Optionally, reset the form or close the modal
-                          $('#enterDate').val('');
-                          $('#enterAmount').val('');
-                          $('#activeFund').val('');
-                          $('#note').val('');
-                          $('#uploadFilex').val('');
-                          $('#hiden').val('');
-                          $('#hidden').val('');
+                          console.log("Full Response:", response); // Log the entire response
+                          activefund = response.d; // Assign the fetched active fund
+                          if (activefund !== undefined && activefund !== null) {
+                              console.log("Active Fund Value:", activefund);
+                              $('#activeFund').val(activefund); // Display the initial active fund in the input field
+                          } else {
+                              console.error("Active fund value is missing in the response.");
+                              alert("Failed to retrieve active fund.");
+                          }
                       },
                       error: function (xhr, status, error) {
-                          console.error('Error:', error);
-                          alert('Failed to save data.');
+                          console.error('Error fetching active fund:', error);
+                          alert('Failed to fetch active fund.');
                       }
                   });
+
+                  // Dynamically Calculate Remaining Active Fund on Input
+                  $('#enterAmount').on('input', function () {
+                      let withdrawAmount = parseFloat($(this).val()) || 0; // Ensure a valid number
+                      let realactive = activefund - withdrawAmount; // Calculate remaining active fund
+
+                      if (realactive < 0) {
+                          realactive = 0; // Prevent negative values
+                      }
+
+                      $('#activeFund').val(realactive); // Update the #activeFund field
+                      console.log("Calculated Real Active Fund:", realactive); // Log the value for debugging
+                  });
+
+                  // Handle Form Submission on Button Click
+                  $('#withdrawSubmit').on('click', function () {
+                      // Fetch the latest withdrawal amount and remaining active fund
+                      let withdrawAmount = parseFloat($('#enterAmount').val()) || 0;
+                      let realactive = activefund - withdrawAmount;
+
+                      // Collect form data
+                      const modalData = {
+                          WithdrawalDate: $('#enterDate').val(),
+                          WithdrawalAmount: withdrawAmount, // Use the numeric value
+                          activeFund: realactive, // Use the calculated active fund
+                          note: $('#note').val(),
+                          fileData: $('#hiden').val(), // Base64 file data
+                          fileName: $('#hidden').val(), // File name
+                          agreementId: agreementId
+                      };
+
+                      console.log("Form Data to Submit:", modalData); // Debug log
+
+                      // Validate form data
+                      if (!modalData.WithdrawalDate || withdrawAmount <= 0) {
+                          alert('Please enter a valid withdrawal date and amount.');
+                          return;
+                      }
+
+                      // Send data to the backend
+                      $.ajax({
+                          url: 'agreementDetails.aspx/SaveModalData',
+                          method: 'POST',
+                          contentType: 'application/json; charset=utf-8',
+                          data: JSON.stringify({ data: modalData }),
+                          success: function (response) {
+                              alert(response.d); // Show backend response
+                              // Optionally, reset the form or close the modal
+                              $('#enterDate').val('');
+                              $('#enterAmount').val('');
+                              $('#activeFund').val('');
+                              $('#note').val('');
+                              $('#uploadFilex').val('');
+                              $('#hiden').val('');
+                              $('#hidden').val('');
+                          },
+                          error: function (xhr, status, error) {
+                              console.error('Error:', error);
+                              alert('Failed to save data.');
+                          }
+                      });
+                  });
               });
+
+
+             
+              // Handle status filter dropdown
+              $('#status-filter').on('change', function () {
+                  const filterValue = $(this).val();
+                  table.column(6).search(filterValue).draw(); // Apply search to the "Status" column
+              });
+
+              $.ajax({
+                  type: "POST",
+                  url: "investorlist.aspx/GetClientData",
+                  contentType: "application/json; charset=utf-8",
+                  dataType: "json",
+                  success: function (response) {
+                      var data = response.d.data;
+
+                      // Clear existing rows in DataTable
+                      table.clear();
+
+                      // Add rows dynamically to DataTable using its API
+                      $.each(data, function (index, item) {
+                          table.row.add([
+                              index + 1,
+                              item.Sl.No,
+                              item.TransactionDate,
+                              item.Withdraw Amount || "-",
+                              item.Active Fund,
+                              item.File,
+                              item.Note,
+
+
+
+                          ]);
+                      });
+
+                      // Redraw DataTable to update the UI
+                      table.draw();
+                  },
+                  error: function (err) {
+                      console.error("Error fetching data:", err);
+                  }
+              });
+            
+
+
+
+
           });
       </script>
 
@@ -506,7 +620,11 @@
                     <h2>Agreement Profile</h2>
                     <h3 id="Agreement"></h3>
                 </div>
-          <input type="hidden" value="" id="hiden" runat="server" /> <input type="hidden" value="" runat="server" id="hidden"  />
+          <input type="hidden" value="" id="hiden" runat="server" />
+          <input type="hidden" value="" runat="server" id="hidden"  />
+                  <input type="hidden" value="" id="hidden1" runat="server" />
+                    <input type="hidden" value="" runat="server" id="hidden2"  />
+ 
  
                 <h2 class="bd">Basic Details</h2>
                 <div class="basic-details" id="detailsContainer">
@@ -588,7 +706,7 @@
                 </button>
             </div>
         </div>
-                    <table class="table table-bordered withdraw-table">
+                    <table id="datatable" class="table table-bordered withdraw-table">
                         <thead>
                             <tr>
                                 <th>Sl.No</th>
@@ -628,7 +746,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="activeFund" class="form-label">Active Fund:</label>
-                        <input type="text" class="form-control" id="activeFund" placeholder="Auto calculate from capital" readonly>
+                        <input type="text" class="form-control" id="activeFund" placeholder="Auto calculate from capital" >
                     </div>
                     <div class="mb-3">
                         <label for="uploadFile" class="form-label">Upload File:</label>
