@@ -212,8 +212,8 @@
     </style>
 
     <script>
-     
-      
+
+
 
         $(document).ready(function () {
 
@@ -253,48 +253,48 @@
 
                         }
                     };
-                        reader.readAsDataURL(file); // Read file as base64
+                    reader.readAsDataURL(file); // Read file as base64
+                }
+            });
+
+
+
+            $("#TransactionAmount, #profitclient, #DaysInvestment, #CurrentTransaction").on("input", function () {
+                // Get values from the inputs
+                const transactionAmount = parseFloat($("#TransactionAmount").val()) || 0;
+                const monthlyProfitPercentage = parseFloat($("#profitclient").val()) || 0; // Monthly percentage
+
+                const daysInvestment = parseInt($("#DaysInvestment").val()) || 0;
+                const currentTransactionDate = $("#CurrentTransaction").val();
+
+                // Ensure valid date input
+                if (currentTransactionDate) {
+                    const currentDate = new Date(currentTransactionDate);
+
+                    // Get the year and month from the current transaction date
+                    const year = currentDate.getFullYear();
+                    const month = currentDate.getMonth(); // 0-based month
+
+                    // Calculate the total days in the current month
+                    const daysInMonth = new Date(year, month + 1, 0).getDate(); // Last day of the month
+
+                    // Calculate the daily profit rate
+                    const dailyProfitRate = (transactionAmount * monthlyProfitPercentage) / (daysInMonth * 100);
+
+                    let calculatedProfit;
+
+                    if (daysInvestment >= daysInMonth) {
+                        // If DaysInvestment equals or exceeds total days in the month, calculate full monthly profit
+                        calculatedProfit = transactionAmount * (monthlyProfitPercentage / 100);
+                    } else {
+                        // Otherwise, calculate the proportional profit based on the daily rate
+                        calculatedProfit = dailyProfitRate * daysInvestment;
                     }
-                });
 
-
-
-                $("#TransactionAmount, #profitclient, #DaysInvestment, #CurrentTransaction").on("input", function () {
-    // Get values from the inputs
-    const transactionAmount = parseFloat($("#TransactionAmount").val()) || 0;
-    const monthlyProfitPercentage = parseFloat($("#profitclient").val()) || 0; // Monthly percentage
-  
-    const daysInvestment = parseInt($("#DaysInvestment").val()) || 0;
-    const currentTransactionDate = $("#CurrentTransaction").val();
-
-    // Ensure valid date input
-    if (currentTransactionDate) {
-        const currentDate = new Date(currentTransactionDate);
-
-        // Get the year and month from the current transaction date
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth(); // 0-based month
-
-        // Calculate the total days in the current month
-        const daysInMonth = new Date(year, month + 1, 0).getDate(); // Last day of the month
-
-        // Calculate the daily profit rate
-        const dailyProfitRate = (transactionAmount * monthlyProfitPercentage) / (daysInMonth * 100);
-
-        let calculatedProfit;
-
-        if (daysInvestment >= daysInMonth) {
-            // If DaysInvestment equals or exceeds total days in the month, calculate full monthly profit
-            calculatedProfit = transactionAmount * (monthlyProfitPercentage / 100);
-        } else {
-            // Otherwise, calculate the proportional profit based on the daily rate
-            calculatedProfit = dailyProfitRate * daysInvestment;
-        }
-
-        // Display the calculated profit in the field
-        $("#calculatedProfit").val(calculatedProfit.toFixed(2)); // Round to 2 decimal places
-    }
-});
+                    // Display the calculated profit in the field
+                    $("#calculatedProfit").val(calculatedProfit.toFixed(2)); // Round to 2 decimal places
+                }
+            });
 
 
 
@@ -306,7 +306,7 @@
                     ClientID: $("#ClientID").val(),
                     TransactionAmount: $("#TransactionAmount").val(),
                     ClientReceipt: $("#ClientReceipt").val(),
-            
+
                     AgreementID: $("#AgreementID").val(),
                     Agreementdocument: $("#Agreementdocument").val(),
                     refer: $("#refer").val(),
@@ -326,7 +326,7 @@
                     calculatedProfit: $("#calculatedProfit").val(),
                     UploadId: $("#UploadId").val()
                 };
-              
+
                 console.log(formData);
 
                 // First AJAX request to save the main data
@@ -336,7 +336,7 @@
                     data: JSON.stringify({ formData: formData }),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
-                    success: function (response) {  
+                    success: function (response) {
                         alert("Main data successfully registered.");
                         window.location.reload();
                         window.location.href = "alltransactions.aspx";
@@ -377,11 +377,11 @@
             });
 
 
-             
+
             $("#btn2").click(function () {
                 const clientID = $("#ClientID").val(); // Get the client ID from input field
 
-               
+
 
                 // First AJAX call to fetch AgreementID
                 $.ajax({
@@ -430,8 +430,8 @@
             });
 
 
-          
-               
+
+
 
             $("#StartDate, #Term").on("change", function () {
                 // Get the start date value
@@ -513,7 +513,7 @@
 
 
 
-  
+
         });
 
     </script>
@@ -542,7 +542,6 @@
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Client ID: </label>
                                     <input type="text" class="form-control" id="ClientID" required>
-
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Transaction Amount:</label>
@@ -554,7 +553,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label fw-bold">Payment Receipt:</label>
-                                 
+
 
                                     <div class="input-group">
                                         <input type="file" class="form-control file-input" id="ClientReceiptx" required>
@@ -635,29 +634,29 @@
                                     </div>
 
 
-<input type="text" id="UploadId" style="display:none;" />
+                                    <input type="text" id="UploadId" style="display: none;" />
 
 
-
-                                        <div class="mb-3">
-                                            <label class="form-label fw-bold">Current Transaction Start::</label>
-                                            <input type="date" class="form-control" id="CurrentTransaction" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label fw-bold">Days For Investment:</label>
-                                            <input type="number" class="form-control" id="DaysInvestment" required>
-                                        </div>
 
                                     <div class="mb-3">
-    <label class="form-label fw-bold">Profit to client:</label>
-    <div class="input-group mb-2 ">
-        <input type="number" class="form-control" id="profitclient" required>
-    </div>
+                                        <label class="form-label fw-bold">Current Transaction Start::</label>
+                                        <input type="date" class="form-control" id="CurrentTransaction" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Days For Investment:</label>
+                                        <input type="number" class="form-control" id="DaysInvestment" required>
+                                    </div>
 
-                                       <div class="mb-3 d-flex align-items-center">
-    <span class="fw-bold me-2">calculatedProfit:</span>
-    <input type="number" class="form-control w-auto" id="calculatedProfit" required>
-</div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Profit to client:</label>
+                                        <div class="input-group mb-2 ">
+                                            <input type="number" class="form-control" id="profitclient" required>
+                                        </div>
+
+                                        <div class="mb-3 d-flex align-items-center">
+                                            <span class="fw-bold me-2">calculatedProfit:</span>
+                                            <input type="number" class="form-control w-auto" id="calculatedProfit" required>
+                                        </div>
 
 
                                     </div>
